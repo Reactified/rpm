@@ -327,7 +327,6 @@ api = {
             end
         end
 
-        print(textutils.serialise(packages_to_update))
         for _,package in pairs(packages_to_update) do
             log("updating "..package.."...")
             if not data.packages[package] then
