@@ -301,7 +301,7 @@ api = {
 
     update = function(target_package)
         local packages_to_update = {target_package}
-        if #target_package < 1 then
+        if not target_package then
             for i,v in pairs(data.packages) do
                 packages_to_update[#packages_to_update+1] = i
             end
