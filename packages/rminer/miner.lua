@@ -1,5 +1,6 @@
 -- automatic miner by reactified
 local item_blacklist = {"minecraft:stone","minecraft:cobblestone","minecraft:dirt","minecraft:diorite","minecraft:granite","minecraft:andesite","minecraft:gravel","minecraft:flint","create:limestone","create:weathered_limestone"}
+local keyword_blacklist = {"fossil"}
 
 local args = {...}
 local target = tonumber(args[1])
@@ -51,6 +52,11 @@ end
 local function isGoodItem(name)
     for i,v in pairs(item_blacklist) do
         if name == v then
+            return false
+        end
+    end
+    for i,v in pairs(keyboard_blacklist) do
+        if string.find(name,v) then
             return false
         end
     end
