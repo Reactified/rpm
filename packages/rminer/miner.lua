@@ -55,7 +55,7 @@ local function isGoodItem(name)
             return false
         end
     end
-    for i,v in pairs(key_blacklist) do
+    for i,v in pairs(keyword_blacklist) do
         if string.find(name,v) then
             return false
         end
