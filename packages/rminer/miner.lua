@@ -119,6 +119,7 @@ local function veinCheck(side)
 end
 
 local function mineStep()
+    turtle.select(1)
     t.dig()
     t.fwd()
     length = length + 1
