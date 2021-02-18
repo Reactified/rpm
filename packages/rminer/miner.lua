@@ -1,5 +1,5 @@
 -- automatic miner by reactified
-local item_blacklist = {"minecraft:stone","minecraft:cobblestone","minecraft:dirt","minecraft:diorite","minecraft:granite","minecraft:andesite","minecraft:gravel","minecraft:flint","create:limestone","create:weathered_limestone"}
+local item_blacklist = {"minecraft:stone","minecraft:cobblestone","minecraft:dirt","minecraft:diorite","minecraft:granite","minecraft:andesite","minecraft:gravel","minecraft:flint","create:limestone","create:weathered_limestone","minecraft:flint"}
 local keyword_blacklist = {"fossil"}
 
 local args = {...}
