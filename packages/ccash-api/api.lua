@@ -367,10 +367,10 @@ function admin.delete(username, admin_password) -- admin delete user account
     return ok,err
 end
 
-ping = function()
+function ping()
 	local ok,err = bal("React")
 	return ok
-end,
+end
 
 -- Simple API
 simple = {
