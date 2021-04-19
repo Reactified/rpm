@@ -344,11 +344,6 @@ function bal(username) -- check user balance
     return ok,tonumber(err)
 end
 
-function allusers() -- list all users
-    local ok,err = http_request("GET","allusers")
-    return ok,err
-end
-
 function admin.vpass(admin_password) -- verify admin password
     local ok,err = http_request("POST","admin/vpass",{
         attempt = admin_password,
@@ -379,10 +374,7 @@ simple = {
 		local ok,err = bal(username)
 		return err
 	end,
-    verify = function(username, password)
-		local ok,err = vpass(username, password)
-		return err
-	end,
+    verify = vpass,
     send = function(fromUsername, fromPassword, toUsername, amount)
         local ok,err = sendfunds(fromUsername, toUsername, amount, fromPassword)
         return err
