@@ -235,11 +235,11 @@ end
 local function parseDependencies(dependencies)
     local files = {}
     while true do
-        local pos = string.find(manifest,"\n")
-        local line = manifest
+        local pos = string.find(dependencies,"\n")
+        local line = dependencies
         if pos then
-            line = string.sub(manifest,1,pos-1)
-            manifest = string.sub(manifest,pos+1,#manifest)
+            line = string.sub(dependencies,1,pos-1)
+            dependencies = string.sub(dependencies,pos+1,#dependencies)
         end
         if #line > 2 then
             files[#files+1] = line
