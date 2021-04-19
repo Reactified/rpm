@@ -378,7 +378,7 @@ simple = {
     balance = bal,
     verify = vpass,
     send = function(fromUsername, fromPassword, toUsername, amount)
-        local ok,err = sendfunds(fromUsername, toUsername, fromPassword, amount)
+        local ok,err = sendfunds(fromUsername, toUsername, amount, fromPassword)
         return ok,err
     end,
 }
