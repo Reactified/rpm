@@ -366,15 +366,26 @@ function admin.delete(username, admin_password) -- admin delete user account
     })
     return ok,err
 end
+ping = function()
+	local ok,err = bal("React")
+	return ok
+end,
 
 -- Simple API
 simple = {
-    register = user,
+	online = ping,
+    register = function(username, password)
+		local ok,err = user(username, password),
+		return err
+	end,
     balance = function(username)
 		local ok,err = bal(username)
 		return err
 	end,
-    verify = vpass,
+    verify = function(username, password)
+		local ok,err = vpass(username, password)
+		return err
+	end,
     send = function(fromUsername, fromPassword, toUsername, amount)
         local ok,err = sendfunds(fromUsername, toUsername, amount, fromPassword)
         return err
