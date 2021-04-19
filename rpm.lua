@@ -248,6 +248,7 @@ local function parseDependencies(dependencies)
     end
     return files
 end
+local log = function() end
 local function installPackage(package)
     if not package then
         log("failed: no package specified",true)
@@ -297,7 +298,6 @@ local function installPackage(package)
     saveData()
     log(package.." installed!")
 end
-local log = function() end
 
 -- RPM API
 api = {
