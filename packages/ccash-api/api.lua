@@ -374,11 +374,20 @@ end
 
 -- Simple API
 simple = {
-    register = user,
-    balance = bal,
-    verify = vpass,
+    register = function(username, password)
+		local ok,err = user(username, password)
+		return err
+	end,
+    balance = function(username)
+		local ok,err = bal(username)
+		return err
+	end,
+    verify = function(username, password)
+		local ok,err = vpass(username, password)
+		return err
+	end,
     send = function(fromUsername, fromPassword, toUsername, amount)
         local ok,err = sendfunds(fromUsername, toUsername, amount, fromPassword)
-        return ok,err
+        return err
     end,
 }
