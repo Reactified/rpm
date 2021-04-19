@@ -374,10 +374,7 @@ end
 
 -- Simple API
 simple = {
-    register = function(username, password)
-		local ok,err = user(username, password)
-		return err
-	end,
+    register = user,
     balance = function(username)
 		local ok,err = bal(username)
 		return err
