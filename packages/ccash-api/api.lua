@@ -376,7 +376,7 @@ end
 simple = {
 	online = ping,
     register = function(username, password)
-		local ok,err = user(username, password),
+		local ok,err = user(username, password)
 		return err
 	end,
     balance = function(username)
