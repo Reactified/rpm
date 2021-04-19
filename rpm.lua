@@ -232,46 +232,77 @@ local function parseManifest(manifest)
     end
     return files
 end
+local function parseDependencies(dependencies)
+    local files = {}
+    while true do
+        local pos = string.find(manifest,"\n")
+        local line = manifest
+        if pos then
+            line = string.sub(manifest,1,pos-1)
+            manifest = string.sub(manifest,pos+1,#manifest)
+        end
+        if #line > 2 then
+            files[#files+1] = line
+        end
+        if not pos then break end
+    end
+    return files
+end
+local function installPackage(package)
+    if not package then
+        log("failed: no package specified",true)
+        return false,"no package specified"
+    end
+
+    if data.packages[package] then
+        log("failed: "..package.." is already installed",true)
+        return false,"package already installed"
+    end
+
+    log("searching for package...")
+    local manifest = getFile("packages/"..package.."/manifest")
+    if not manifest then
+        log("failed: package not found",true)
+        return false,"package not found"
+    end
+    log("located package "..package)
+
+    local dependencies = getFile("packages/"..package.."/dependencies")
+
+    if dependencies then
+        print("downloading dependencies")
+        dependencies = parseDependencies(dependencies)
+        for id,dependency in pairs(dependencies) do
+            if not data.packages[dependency] then
+                installPackage(dependency)
+            end
+        end
+    end
+
+    local manifest = parseManifest(manifest)
+    for id,file in pairs(manifest) do
+        local fdata = getFile("packages/"..package.."/"..file[1])
+        if fdata then
+            log("+ PKG/"..file[1].." -> ~/"..file[2])
+            f = fs.open(file[2],"w")
+            f.writeLine(fdata)
+            f.close()
+            manifest[id][3] = sha256(fdata)
+        else
+            log("PKG/"..file[1].." not found!",true)
+        end
+    end
+    
+    data.packages[package] = manifest
+    saveData()
+    log(package.." installed!")
+end
 local log = function() end
 
 -- RPM API
 api = {
     install = function(package)
-        if not package then
-            log("failed: no package specified",true)
-            return false,"no package specified"
-        end
-
-        if data.packages[package] then
-            log("failed: "..package.." is already installed",true)
-            return false,"package already installed"
-        end
-
-        log("searching for package...")
-        local manifest = getFile("packages/"..package.."/manifest")
-        if not manifest then
-            log("failed: package not found",true)
-            return false,"package not found"
-        end
-        log("located package "..package)
-
-        local manifest = parseManifest(manifest)
-        for id,file in pairs(manifest) do
-            local fdata = getFile("packages/"..package.."/"..file[1])
-            if fdata then
-                log("+ PKG/"..file[1].." -> ~/"..file[2])
-                f = fs.open(file[2],"w")
-                f.writeLine(fdata)
-                f.close()
-                manifest[id][3] = sha256(fdata)
-            else
-                log("PKG/"..file[1].." not found!",true)
-            end
-        end
-        
-        data.packages[package] = manifest
-        saveData()
-        log(package.." installed!")
+        installPackage(package)
         return true,"package installed"
     end,
 
