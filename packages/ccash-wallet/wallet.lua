@@ -250,7 +250,7 @@ local function masterRoutine()
                         --"Leaderboard",
                     }
                     local tab = 1
-                    local scroll = 0
+                    local scroll = 1
                     local rawTransactions
                     local lastTransBalance
                     while true do
