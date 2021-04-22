@@ -251,6 +251,8 @@ local function masterRoutine()
                     }
                     local tab = 1
                     local scroll = 1
+                    local rawTransactions
+                    local lastTransBalance
                     while true do
                         -- UI Draw
                         term.setBackgroundColor(colors.black)
@@ -332,10 +334,14 @@ local function masterRoutine()
                                 term.setCursorPos(i,8)
                                 write(string.char(math.random(129,140)))
                             end
-                            apiDebounce()
-                            apiBusy = true
-                            local rawTransactions = api.transactions(username, password)
-                            apiBusy = false
+
+                            if lastTransBalance ~= balance then
+                                apiDebounce()
+                                apiBusy = true
+                                rawTransactions = api.transactions(username, password)
+                                apiBusy = false
+                                lastTransBalance = balance
+                            end
                             if type(rawTransactions) == "table" then
                                 local trans = {}
                                 local vx = 0
@@ -345,26 +351,69 @@ local function masterRoutine()
                                 for i=1,#rawTransactions do
                                     local transx = rawTransactions[i]
                                     local val = {}
+
+                                    -- calculate age
+                                    local age = math.floor((os.epoch("utc")-transx.time )/1000)
+
+                                    local ageSeconds = age
+                                    local ageMinutes = math.floor(ageSeconds/60)
+                                    local ageHours = math.floor(ageMinutes/60)
+                                    local ageDays = math.floor(ageHours/24)
+                                    local ageMonths = math.floor(ageDays/31)
+                                    local ageYears = math.floor(ageMonths/12)
+
+                                    ageSeconds = ageSeconds - (ageMinutes * 60)
+                                    ageMinutes = ageMinutes - (ageHours * 60)
+                                    ageHours = ageHours - (ageDays * 24)
+                                    ageDays = ageDays - (ageMonths * 31)
+                                    ageMonths = ageMonths - (ageYears * 12)
+
+                                    if ageYears > 0 then
+                                        val.age = tostring(ageYears).."y "..tostring(ageMonths).."m"
+                                    elseif ageMonths > 0 then
+                                        val.age = tostring(ageMonths).."mo "..tostring(ageDays).."d"
+                                    elseif ageDays > 0 then
+                                        val.age = tostring(ageDays).."d "..tostring(ageHours).."h"
+                                    elseif ageHours > 0 then
+                                        val.age = tostring(ageHours).."h "..tostring(ageMinutes).."m"
+                                    elseif ageMinutes > 0 then
+                                        val.age = tostring(ageMinutes).."m "..tostring(ageSeconds).."s"
+                                    else
+                                        val.age = tostring(ageSeconds).."s"
+                                    end
+
                                     if transx.to == username then
                                         val.address = transx.from
                                         val.amount = transx.amount
                                     elseif transx.from == username then
                                         val.address = transx.to
                                         val.amount = -transx.amount
+                                    else
+                                        val.address = "Unknown"
+                                        val.amount = transx.amount
                                     end
                                     val.id = i
                                     trans[#trans+1] = val
                                 end
                                 local yp = 10
+                                local nameAlign = 0
+                                for i=scroll,h+scroll-11 do
+                                    if trans[i] and #tostring(trans[i].amount) > nameAlign then
+                                        nameAlign = #tostring(trans[i].amount)
+                                    end
+                                end
                                 for i=scroll,h+scroll-11 do
                                     local v = trans[i]
                                     if v then
-                                        term.setCursorPos(2,yp)
                                         term.setTextColor(colors.gray)
-                                        write(tostring(v.id)..": ")
+                                        rightAlign(v.age .. " ago",yp)
+                                        
                                         term.setTextColor(colors.lightGray)
-                                        write(v.address)
+                                        term.setCursorPos(nameAlign+8,yp)
+                                        write(v.address,yp)
+                                        
                                         local str = tostring(v.amount)
+                                        term.setCursorPos(2,yp)
                                         if v.amount > 0 then
                                             str = "+"..str.." <<"
                                             term.setTextColor(colors.lime)
@@ -372,7 +421,7 @@ local function masterRoutine()
                                             str = str .. " >>"
                                             term.setTextColor(colors.red)
                                         end
-                                        rightAlign(str,yp)
+                                        write(str,yp)
                                         yp = yp + 1
                                     end
                                 end
