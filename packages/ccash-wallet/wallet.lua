@@ -250,7 +250,7 @@ local function masterRoutine()
                         --"Leaderboard",
                     }
                     local tab = 1
-                    local scroll = 1
+                    local scroll = 0
                     local rawTransactions
                     local lastTransBalance
                     while true do
@@ -368,18 +368,36 @@ local function masterRoutine()
                                     ageDays = ageDays - (ageMonths * 31)
                                     ageMonths = ageMonths - (ageYears * 12)
 
-                                    if ageYears > 0 then
-                                        val.age = tostring(ageYears).."y "..tostring(ageMonths).."m"
-                                    elseif ageMonths > 0 then
-                                        val.age = tostring(ageMonths).."mo "..tostring(ageDays).."d"
-                                    elseif ageDays > 0 then
-                                        val.age = tostring(ageDays).."d "..tostring(ageHours).."h"
-                                    elseif ageHours > 0 then
-                                        val.age = tostring(ageHours).."h "..tostring(ageMinutes).."m"
-                                    elseif ageMinutes > 0 then
-                                        val.age = tostring(ageMinutes).."m "..tostring(ageSeconds).."s"
+                                    if w > 30 then
+                                        -- large displays
+                                        if ageYears > 0 then
+                                            val.age = tostring(ageYears).."y "..tostring(ageMonths).."m"
+                                        elseif ageMonths > 0 then
+                                            val.age = tostring(ageMonths).."mo "..tostring(ageDays).."d"
+                                        elseif ageDays > 0 then
+                                            val.age = tostring(ageDays).."d "..tostring(ageHours).."h"
+                                        elseif ageHours > 0 then
+                                            val.age = tostring(ageHours).."h "..tostring(ageMinutes).."m"
+                                        elseif ageMinutes > 0 then
+                                            val.age = tostring(ageMinutes).."m "..tostring(ageSeconds).."s"
+                                        else
+                                            val.age = tostring(ageSeconds).."s"
+                                        end
                                     else
-                                        val.age = tostring(ageSeconds).."s"
+                                        -- small displays
+                                        if ageYears > 0 then
+                                            val.age = tostring(ageYears).."y"
+                                        elseif ageMonths > 0 then
+                                            val.age = tostring(ageMonths).."mo"
+                                        elseif ageDays > 0 then
+                                            val.age = tostring(ageDays).."d"
+                                        elseif ageHours > 0 then
+                                            val.age = tostring(ageHours).."h"
+                                        elseif ageMinutes > 0 then
+                                            val.age = tostring(ageMinutes).."m"
+                                        else
+                                            val.age = tostring(ageSeconds).."s"
+                                        end
                                     end
 
                                     if transx.to == username then
@@ -406,7 +424,11 @@ local function masterRoutine()
                                     local v = trans[i]
                                     if v then
                                         term.setTextColor(colors.gray)
-                                        rightAlign(v.age .. " ago",yp)
+                                        if w > 30 then
+                                            rightAlign(v.age .. " ago",yp)
+                                        else
+                                            rightAlign(v.age,yp)
+                                        end
                                         
                                         term.setTextColor(colors.lightGray)
                                         term.setCursorPos(nameAlign+8,yp)
