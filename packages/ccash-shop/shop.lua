@@ -4,7 +4,6 @@
 local currency = "CSH"
 local errors = {}
 local m = peripheral.find("monitor")
-local modem = peripheral.find("modem")
 
 --/ Shop API /--
 if not fs.exists("/ccash.lua") then
@@ -93,9 +92,6 @@ end
 --/ Shop Routine /--
 local function shopRoutine()
     -- Check Peripherals
-    if not modem then
-        errors[#errors+1] = "No modem detected."
-    end
     if not m then 
         errors[#errors+1] = "No monitor detected."
     elseif m and not m.isColor() then
