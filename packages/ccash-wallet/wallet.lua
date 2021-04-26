@@ -521,7 +521,7 @@ local function masterRoutine()
                             end
                         end
                         if e == "mouse_scroll" then
-                            scroll = scroll + (c*2)
+                            scroll = scroll + c
                             if scroll < 1 then
                                 scroll = 1
                             end
