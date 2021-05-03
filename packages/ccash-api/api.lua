@@ -1,5 +1,5 @@
 -- Reactified's CCash API
-local bank = "https://ccash.ryzerth.com/BankF/" -- set your bank url here
+local bank = "https://twix.aosync.me/BankF/" -- set your bank url here
 
 --[[
 
