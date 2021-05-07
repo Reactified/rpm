@@ -164,10 +164,10 @@ api = {
 
             -- update RPM
             local f = fs.open(shell.getRunningProgram(),"r")
-            if f then
+            local ndata = getFile("rpm.lua")
+            if f and ndata then
                 local fdata = f.readAll()
                 f.close()
-                local ndata = getFile("rpm.lua")
                 if ndata ~= fdata then
                     log("rpm update available!")
                     log("updating rpm...")
@@ -222,9 +222,17 @@ api = {
                             f.writeLine(fdata)
                             f.close()
                             log("% PKG/"..file[1].." -> ~/"..file[2])
+                            -- generate new hash
                             for id,v in pairs(manifest) do
                                 if v[1] == file[1] and v[2] == file[2] then
                                     manifest[id][3] = hash(fdata)
+                                end
+                            end
+                        else
+                            -- set hash to old value
+                            for id,v in pairs(manifest) do
+                                if v[1] == file[1] and v[2] == file[2] then
+                                    manifest[id][3] = file[3]
                                 end
                             end
                         end
