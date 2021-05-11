@@ -425,6 +425,11 @@ local function nodeRoutine()
         local msg = recv()
         if msg == "[STATUS-UPDATE]" then
             send(data)
+        elseif msg == "[NODE-UPDATE]" then
+            shell.run("rpm update")
+        elseif msg == "[NODE-REBOOT]" then
+            sleep(8)
+            os.reboot()
         elseif type(msg) == "table" then
             if msg.command == "[IO-UPDATE]" and data.io[msg.interface] then
                 local interf = data.io[msg.interface]
