@@ -240,18 +240,20 @@ local function shopRoutine()
                                     local amount = math.floor(bal/price+0.01)
                                     api.send(data.username,data.password,data.vault,bal)
                                     for slot=1,16 do
-                                        local data = turtle.getItemDetail(slot)
-                                        if data then
-                                            if genID(data) == sel[1] then
-                                                turtle.select(slot)
-                                                if amount > turtle.getItemCount() then
-                                                    turtle.dropDown()
-                                                    amount = amount - turtle.getItemCount()
-                                                else
-                                                    turtle.dropDown(amount)
-                                                    amount = 0
+                                        if amount > 0 then
+                                            local data = turtle.getItemDetail(slot)
+                                            if data then
+                                                if genID(data) == sel[1] then
+                                                    turtle.select(slot)
+                                                    if amount > turtle.getItemCount() then
+                                                        turtle.dropDown()
+                                                        amount = amount - turtle.getItemCount()
+                                                    else
+                                                        turtle.dropDown(amount)
+                                                        amount = amount - turtle.getITemCount()
+                                                    end
+                                                    break
                                                 end
-                                                break
                                             end
                                         end
                                     end
