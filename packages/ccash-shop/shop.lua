@@ -226,18 +226,21 @@ local function shopRoutine()
                                 if type(bal) == "number" and bal >= tonumber(price) then
                                     local amount = math.floor(bal/price)
                                     api.send(data.username,data.password,data.vault,bal)
-                                    for _=1,amount do
-                                        for slot=1,16 do
-                                            local data = turtle.getItemDetail(slot)
-                                            if data then
-                                                if genID(data) == sel[1] then
-                                                    turtle.select(slot)
-                                                    turtle.drop(1)
-                                                    break
+                                    for slot=1,16 do
+                                        local data = turtle.getItemDetail(slot)
+                                        if data then
+                                            if genID(data) == sel[1] then
+                                                turtle.select(slot)
+                                                if amount > turtle.getItemCount() then
+                                                    turtle.drop()
+                                                    amount = amount - turtle.getItemCount()
+                                                else
+                                                    turtle.drop(amount)
+                                                    amount = 0
                                                 end
+                                                break
                                             end
                                         end
-                                        sleep()
                                     end
                                     data.products[sel[1]].price = data.products[sel[1]].price * (1+price_change_magnitude)
                                     break
@@ -535,8 +538,6 @@ local function adminUI()
                 term.setCursorPos(14,3)
                 term.setTextColor(colors.white)
                 write(tostring(math.floor(product.price*100)/100).." "..currency)
-                term.setCursorPos(14,4)
-                --write(tostring(product.min_price).." "..currency)
                 term.setCursorPos(14,4)
                 write(tostring(product.start_price).." "..currency)
                 local sel = menu({"<- Return","Delete","Set Price"},7)
