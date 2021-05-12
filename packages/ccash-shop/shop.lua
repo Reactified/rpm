@@ -34,7 +34,14 @@ end
 --/ Fixed Tostring /--
 local function fixedTostring(number) -- simple tostring function that rounds off floating point errors
     local str = tostring(number)
-    if string.find(str,".") then
+    local hasPeriod = false
+    for i=1,#str do
+        local char = string.sub(str,i,i)
+        if char == "." then
+            hasPeriod = true
+        end
+    end
+    if hasPeriod then
         for i=1,#str do
             if string.sub(str,#str,#str) == "0" then
                 str = string.sub(str,1,#str-1)
@@ -552,9 +559,9 @@ local function adminUI()
                 write("Start Price")
                 term.setCursorPos(14,3)
                 term.setTextColor(colors.white)
-                write(tostring(math.floor(product.price*100)/100).." "..currency)
+                write(fixedTostring(math.floor(product.price*100)/100).." "..currency)
                 term.setCursorPos(14,4)
-                write(tostring(product.start_price).." "..currency)
+                write(fixedTostring(product.start_price).." "..currency)
                 local sel = menu({"<- Return","Delete","Set Price"},7)
                 if sel == 2 then
                     data.products[id] = nil
