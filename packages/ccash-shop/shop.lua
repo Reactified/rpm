@@ -232,10 +232,10 @@ local function shopRoutine()
                                             if genID(data) == sel[1] then
                                                 turtle.select(slot)
                                                 if amount > turtle.getItemCount() then
-                                                    turtle.drop()
+                                                    turtle.dropDown()
                                                     amount = amount - turtle.getItemCount()
                                                 else
-                                                    turtle.drop(amount)
+                                                    turtle.dropDown(amount)
                                                     amount = 0
                                                 end
                                                 break
