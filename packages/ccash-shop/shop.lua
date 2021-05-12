@@ -245,7 +245,7 @@ local function shopRoutine()
                                             if data then
                                                 if genID(data) == sel[1] then
                                                     turtle.select(slot)
-                                                    turtle.dropUp(1)
+                                                    turtle.drop(1)
                                                     break
                                                 end
                                             end
