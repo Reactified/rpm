@@ -31,6 +31,19 @@ else
     init = true
 end
 
+--/ Fixed Tostring /--
+local function fixedTostring(number) -- simple tostring function that rounds off floating point errors
+    local str = tostring(number)
+    if string.find(str,".") then
+        for i=1,#str do
+            if string.sub(str,#str,#str) == "0" then
+                str = string.sub(str,1,#str-1)
+            end
+        end
+    end
+    return str
+end
+
 --/ Inventory Management /--
 local price_change_time = data.price_change_time -- How often the shop lowers prices
 local price_change_magnitude = data.price_change_magnitude -- How much the shop lowers prices
@@ -155,7 +168,7 @@ local function shopRoutine()
                 m.setTextColor(data.color)
                 m.write(product.name)
                 m.setTextColor(colors.white)
-                local str = tostring(math.floor(product.price*100)/100).." "..currency
+                local str = fixedTostring(math.floor(product.price*100)/100).." "..currency
                 m.setCursorPos(w-#str,2+(i*3))
                 m.write(str)
                 m.setCursorPos(2,3+(i*3))
@@ -176,7 +189,7 @@ local function shopRoutine()
                 local sel = stock[math.floor((y-2)/3)]
                 if sel then
                     local product = data.products[sel[1]]
-                    local price = math.floor(product.price)
+                    local price = math.floor(product.price*100)/100
                     m.setBackgroundColor(colors.gray)
                     m.clear()
                     m.setBackgroundColor(data.color)
@@ -198,7 +211,7 @@ local function shopRoutine()
                     center("Purchasing",5)
                     center("> Cancel <",h-1)
                     center("Send "..currency.." to",math.floor(h/2)+2)
-                    center(tostring(price).." "..currency.." / each",8)
+                    center(fixedTostring(price).." "..currency.." / each",8)
                     m.setTextColor(data.color)
                     center(" "..data.username.." ",math.floor(h/2)+3)
                     center(product.name,7)
