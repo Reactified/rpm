@@ -155,7 +155,7 @@ local function shopRoutine()
                 m.setTextColor(data.color)
                 m.write(product.name)
                 m.setTextColor(colors.white)
-                local str = tostring(math.floor(product.price)).." "..currency
+                local str = tostring(math.floor(product.price*100)/100).." "..currency
                 m.setCursorPos(w-#str,2+(i*3))
                 m.write(str)
                 m.setCursorPos(2,3+(i*3))
@@ -224,7 +224,7 @@ local function shopRoutine()
                             if state == 5 then
                                 local bal = api.balance(data.username)
                                 if type(bal) == "number" and bal >= tonumber(price) then
-                                    local amount = math.floor(bal/price)
+                                    local amount = math.floor(bal/price+0.01)
                                     api.send(data.username,data.password,data.vault,bal)
                                     for slot=1,16 do
                                         local data = turtle.getItemDetail(slot)
