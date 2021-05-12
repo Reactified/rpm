@@ -6,20 +6,7 @@ local errors = {}
 local m = peripheral.find("monitor")
 
 --/ Shop API /--
-if not fs.exists("/ccash.lua") then
-    h = http.get("https://raw.githubusercontent.com/Reactified/rpm/master/packages/ccash-api/api.lua")
-    if h then
-        f = fs.open("/ccash.lua","w")
-        f.writeLine(h.readAll())
-        f.close()
-    else
-        errors[#errors+1] = "Unable to download API"
-    end
-end
-local ok,err = pcall(function() os.loadAPI("/ccash.lua") end)
-if not ok then
-    errors[#errors+1] = "Economy server unreachable"
-end
+os.loadAPI("/apis/ccash.lua")
 
 local api = _G["ccash"].simple
 
