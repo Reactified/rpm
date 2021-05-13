@@ -107,9 +107,11 @@ function primaryRoutine()
             if msg then
                 nodes[i] = msg
                 if nodes[i] then
-                    for k,z in pairs(nodes[i].io) do
-                        if z.type == "Basic Sensor" or z.type == "Percentage Bar" then
-                            updateIO(i,k,true)
+                    if nodes[i] then
+                        for k,z in pairs(nodes[i].io) do
+                            if z.type == "Basic Sensor" or z.type == "Percentage Bar" then
+                                updateIO(i,k,true)
+                            end
                         end
                     end
                 end
