@@ -138,7 +138,7 @@ end
 
 local function writeBalance()
     if balance >= 0 then
-        write(tostring(balance)..csn)
+        write(tostring(balance).." "..csn)
     else
         write("Loading...")
     end
