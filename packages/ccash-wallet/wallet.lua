@@ -114,7 +114,7 @@ local username = false
 local autologin = walletData.username
 
 local online = nil
-local balance = 0
+local balance = -1
 
 local function balanceRoutine()
     while true do
@@ -123,12 +123,24 @@ local function balanceRoutine()
         local fetchedStatus,fetchedBalance = fullApi.bal(username or "React")
         if fetchedStatus then
             online = true
-            balance = fetchedBalance
+            if username then
+                balance = fetchedBalance
+            else
+                balance = -1
+            end
         else
             online = false
         end
         apiBusy = false
         sleep(5)
+    end
+end
+
+local function writeBalance()
+    if balance >= 0 then
+        write(tostring(balance)..csn)
+    else
+        write("Loading...")
     end
 end
 
@@ -190,6 +202,8 @@ local function masterRoutine()
             return
         elseif y == 10 or autologin then
             if x < 11 or autologin then
+                username = false
+                balance = -1
                 -- Log In
                 drawHeader()
                 term.setCursorPos(2,6)
@@ -275,7 +289,7 @@ local function masterRoutine()
                             write(username)
                             term.setTextColor(colors.brown)
                             term.setCursorPos(5,6)
-                            write(tostring(balance).." "..csn)
+                            writeBalance()
                             term.setTextColor(colors.gray)
                             for i=2,w-1 do
                                 term.setCursorPos(i,8)
@@ -292,7 +306,7 @@ local function masterRoutine()
                             write(username)
                             term.setTextColor(colors.brown)
                             term.setCursorPos(5,h-1)
-                            write(tostring(balance).." "..csn)
+                            writeBalance()
                             term.setTextColor(colors.gray)
                             for i=2,w-1 do
                                 term.setCursorPos(i,h-4)
