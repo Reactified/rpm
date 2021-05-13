@@ -256,8 +256,8 @@ local function shopRoutine()
                                                         turtle.dropDown()
                                                         amount = amount - turtle.getItemCount()
                                                     else
-                                                        amount = amount - turtle.getItemCount()
                                                         turtle.dropDown(amount)
+                                                        amount = 0
                                                     end
                                                 end
                                             end
