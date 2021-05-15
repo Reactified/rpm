@@ -85,4 +85,5 @@ function transmit(msg,continue)
         sleep(0.1)
     end
     rs.setOutput(openSide,false)
+    sleep(0.1)
 end
