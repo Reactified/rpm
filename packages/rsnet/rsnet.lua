@@ -56,6 +56,7 @@ function receive()
         end
         msg = msg..string.char(dec)
     end
+    sleep(0.1)
     return msg
 end
 
@@ -79,7 +80,7 @@ function transmit(msg,continue)
             sleep(0.1)
         end
     end
-    for i=1,10 do
+    for i=1,8 do
         rs.setOutput(openSide,true)
         sleep(0.1)
     end
