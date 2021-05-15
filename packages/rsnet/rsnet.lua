@@ -35,7 +35,9 @@ function open(side)
 end
 function receive()
     if not openSide then return false end
-    os.pullEvent("redstone")
+    repeat
+    	os.pullEvent("redstone")
+    until rs.getInput(openSide)
     sleep(1)
     msg = ""
     while true do
