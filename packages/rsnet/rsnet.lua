@@ -56,7 +56,6 @@ function receive()
         end
         msg = msg..string.char(dec)
     end
-    sleep(0.1)
     return msg
 end
 
