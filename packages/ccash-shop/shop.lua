@@ -797,4 +797,8 @@ local function kernel()
 end
 while true do
     local ok,err = pcall(kernel)
+    if not ok and err ~= "Terminated" then
+        printError("Crashed: "..tostring(err))
+        sleep(5)
+    end
 end
