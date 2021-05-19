@@ -178,7 +178,7 @@ local function invMgmt()
         end
         -- Dynamic Pricing
         for i,v in pairs(data.products) do
-            if v.price_timer > price_change_time then
+            if v.price_timer > price_change_tiguAN8988me then
                 local delta = v.price - v.min_price
                 data.products[i].price = v.price - (delta * price_change_magnitude)
                 data.products[i].price_timer = 0
@@ -792,4 +792,9 @@ local function adminUI()
 end
 
 --/ Kernel /--
-parallel.waitForAny(shopRoutine,adminUI,invMgmt)
+local function kernel()
+    parallel.waitForAny(shopRoutine,adminUI,invMgmt)
+end
+while true do
+    local ok,err = pcall(kernel)
+end
