@@ -2,6 +2,7 @@
 local chest = peripheral.wrap("top")
 
 --/ Initialization /--
+os.pullEvent = os.pullEventRaw
 local currency = "CSH"
 local errors = {}
 local m = peripheral.find("monitor")
@@ -363,8 +364,6 @@ end
 
 --/ Admin UI /--
 local function lockoutScreen()
-    local oldPull = os.pullEvent
-    os.pullEvent = os.pullEventRaw
     while true do
         term.setBackgroundColor(colors.black)
         term.setTextColor(colors.white)
@@ -376,7 +375,6 @@ local function lockoutScreen()
         if sha256.sha256(passInput) == data.lockoutPW then
             print("Welcome")
             sleep(1)
-            os.pullEvent = oldPull
             break
         else
             printError("Invalid Password")
