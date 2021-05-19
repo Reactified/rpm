@@ -87,9 +87,9 @@ local function dispenseItem(itemID, amount)
     end
 end
 
---/ Shop API /--
+--/ API Imports /--
+os.loadAPI("/apis/sha256.lua")
 os.loadAPI("/apis/ccash.lua")
-
 local api = _G["ccash"].simple
 
 --/ Fixed Tostring /--
@@ -361,6 +361,28 @@ local function shopRoutine()
 end
 
 --/ Admin UI /--
+local function lockoutScreen()
+    local oldPull = os.pullEvent
+    os.pullEvent = os.pullEventRaw
+    while true do
+        term.setBackgroundColor(colors.black)
+        term.setTextColor(colors.white)
+        term.clear()
+        term.setCursorPos(1,1)
+        print(data.name.." | Locked")
+        write("> ")
+        local passInput = read("*")
+        if sha256.sha256(passInput) == data.lockoutPW then
+            print("Welcome")
+            sleep(1)
+            os.pullEvent = oldPull
+            break
+        else
+            printError("Invalid Password")
+            sleep(2)
+        end
+    end
+end
 local function adminUI()
     -- Chest Warning
     if not chest then
@@ -385,7 +407,6 @@ local function adminUI()
     term.setCursorPos(2,4)
     term.setTextColor(colors.white)
     write("Initializing...")
-    sleep(1)
     if #errors > 0 then
         term.setCursorPos(2,6)
         write("!! Fatal Error(s) Encountered:")
@@ -563,6 +584,12 @@ local function adminUI()
         os.pullEvent('key')
         init = false
     end
+
+    -- Lockout
+    if data.lockoutPW then
+        lockoutScreen()
+    end
+
     -- Menu Functions
     local function menu(options,ln)
         local selection = 1
@@ -613,7 +640,7 @@ local function adminUI()
         term.setCursorPos(2,1)
         term.setTextColor(colors.black)
         write(data.name)
-        local sel = menu({"Products ("..tostring(count(data.products))..")","Uncategorized ("..tostring(count(uncategorized))..")"},3)
+        local sel = menu({"Products ("..tostring(count(data.products))..")","Uncategorized ("..tostring(count(uncategorized))..")","Lockout","Shell"},3)
         if sel == 1 then
             term.setBackgroundColor(colors.gray)
             term.clear()
@@ -720,6 +747,47 @@ local function adminUI()
                 end
                 sleep(1.5)
             end
+        elseif sel == 3 then
+            if data.lockoutPW then
+                lockoutScreen()
+            else
+                term.setBackgroundColor(colors.gray)
+                term.clear()
+                term.setBackgroundColor(colors.lightGray)
+                term.setCursorPos(2,1)
+                term.clearLine()
+                term.setCursorPos(2,1)
+                term.setTextColor(colors.black)
+                write("Set Lockout Password")
+                term.setBackgroundColor(colors.gray)
+                term.setCursorPos(2,3)
+                term.setTextColor(colors.white)
+                print("Enter your new password")
+                term.setCursorPos(2,4)
+                term.setTextColor(colors.lightGray)
+                write("> ")
+                local pass1 = read("*")
+                term.setCursorPos(2,5)
+                write("Confirm")
+                term.setCursorPos(2,6)
+                write("> ")
+                local pass2 = read("*")
+                term.setCursorPos(2,8)
+                term.setTextColor(colors.white)
+                if pass1 == pass2 then
+                    data.lockoutPW = sha256.sha256(pass1)
+                    write("Password set.")
+                    saveData()
+                else
+                    write("Passwords do not match")
+                end
+                sleep(2)
+            end
+        elseif sel == 4 then
+            term.setBackgroundColor(colors.black)
+            term.clear()
+            term.setCursorPos(1,1)
+            shell.run('shell')
         end
     end
 end
