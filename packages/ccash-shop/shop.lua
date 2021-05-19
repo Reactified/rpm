@@ -348,9 +348,9 @@ local function shopRoutine()
                         end
                     end
                     local function cancelUiFunction()
-                        local monW,monH = m.getSize()
                         while true do
                             local e,c,x,y = os.pullEvent("monitor_touch")
+                            local monW,monH = m.getSize()
                             if y > monH-2 then break end
                         end
                     end
