@@ -1,14 +1,14 @@
 --/ Dynamic Shop / Reactified /--
+local chest = peripheral.wrap("top")
 
 --/ Initialization /--
 local currency = "CSH"
 local errors = {}
 local m = peripheral.find("monitor")
 
---/ Shop API /--
-os.loadAPI("/apis/ccash.lua")
-
-local api = _G["ccash"].simple
+if (type(chest) ~= "table") or (chest and not chest.size) then
+    chest = nil
+end
 
 --/ Data Persistence /--
 local data = {
@@ -16,6 +16,7 @@ local data = {
     price_change_time = 120,
     price_change_magnitude = 0,
     price_increase_magnitude = 0,
+    drop = "down",
 }
 local init =  false
 local function saveData()
@@ -30,6 +31,66 @@ if fs.exists('/.shopdata') then
 else
     init = true
 end
+
+--/ ID System /--
+local function genID(item)
+    return item.name.."/"..tostring(item.damage)
+end
+
+--/ Item Dispensing /--
+local dropFunction = turtle.dropDown
+if data.drop == "down" then
+    dropFunction = turtle.dropDown
+elseif data.drop == "forward" then
+    dropFunction = turtle.drop
+elseif data.drop == "up" then
+    dropFunction = turtle.dropUp
+end
+
+local function dispenseItem(itemID, amount)
+    if amount > 0 then
+        if chest then
+            -- chest dispensing routine
+            for slot,slotData in pairs(chest.list()) do
+                local data = chest.getItemDetail(slot)
+                if data and genID(data) == itemID then
+                    if amount > slotData.count then
+                        chest.pushItems(peripheral.getName(chest),slot,slotData.count,1)
+                        turtle.suckUp(slotData.count)
+                        dropFunction()
+                        amount = amount - slotData.count
+                    else
+                        chest.pushItems(peripheral.getName(chest),slot,amount,1)
+                        turtle.suckUp(amount)
+                        dropFunction()
+                        amount = 0
+                    end
+                end
+            end
+        else
+            -- turtle inventory dispensing routine
+            for slot=1,16 do
+                local data = turtle.getItemDetail(slot)
+                if data and genID(data) == itemID then
+                    turtle.select(slot)
+                    if amount > turtle.getItemCount() then
+                        local ct = turtle.getItemCount()
+                        dropFunction()
+                        amount = amount - ct
+                    else
+                        dropFunction(amount)
+                        amount = 0
+                    end
+                end
+            end
+        end
+    end
+end
+
+--/ Shop API /--
+os.loadAPI("/apis/ccash.lua")
+
+local api = _G["ccash"].simple
 
 --/ Fixed Tostring /--
 local function fixedTostring(number) -- simple tostring function that rounds off floating point errors
@@ -57,9 +118,7 @@ local price_change_magnitude = data.price_change_magnitude -- How much the shop 
 local price_increase_magnitude = data.price_increase_magnitude -- How much prices increase per item sold
 local stock = {}
 local uncategorized = {}
-local function genID(item)
-    return item.name.."/"..tostring(item.damage)
-end
+local chestFull = false
 local function invMgmt()
     while init do
         sleep(5)
@@ -67,14 +126,48 @@ local function invMgmt()
     while true do
         nstock = {}
         uncategorized = {}
-        for i=1,16 do
-            local item = turtle.getItemDetail(i)
-            if item then
-                local id = genID(item)
-                if data.products[id] then
-                    nstock[id] = (nstock[id] or 0) + item.count
-                else
-                    uncategorized[id] = true
+        if chest then
+            if chest.list()[1] then
+                for i=2,chest.size() do
+                    local detail = chest.getItemDetail(i)
+                    if not detail then
+                        local firstSlotDetail = chest.getItemDetail(1)
+                        chest.pushItems(peripheral.getName(chest),1,firstSlotDetail.count,i)
+                        break
+                    end
+                    if i == chest.size() then
+                        local oldX,oldY = term.getCursorPos()
+                        local turtleW,turtleH = term.getSize()
+                        term.setCursorPos(2,turtleH-1)
+                        printError("Your chest is too full to operate.")
+                        term.setCursorPos(oldX,oldY)
+                        chestFull = true
+                    end
+                end
+            else
+                chestFull = false
+            end
+            for i,v in pairs(chest.list()) do
+                local item = chest.getItemDetail(i)
+                if item then
+                    local id = genID(item)
+                    if data.products[id] then
+                        nstock[id] = (nstock[id] or 0) + item.count
+                    else
+                        uncategorized[id] = true
+                    end
+                end
+            end
+        else
+            for i=1,16 do
+                local item = turtle.getItemDetail(i)
+                if item then
+                    local id = genID(item)
+                    if data.products[id] then
+                        nstock[id] = (nstock[id] or 0) + item.count
+                    else
+                        uncategorized[id] = true
+                    end
                 end
             end
         end
@@ -192,7 +285,7 @@ local function shopRoutine()
             local e,c,x,y = os.pullEvent()
             if e == "timer" and c == tmr then
                 break
-            elseif e == "monitor_touch" then
+            elseif e == "monitor_touch" and not chestFull then
                 local sel = stock[math.floor((y-2)/3)]
                 if sel then
                     local product = data.products[sel[1]]
@@ -244,26 +337,9 @@ local function shopRoutine()
                             if state == 5 then
                                 local bal = api.balance(data.username)
                                 if type(bal) == "number" and bal >= tonumber(price) then
-                                    local amount = math.floor(bal/price+0.01)
+                                    local amount = math.floor(bal/price+0.00001)
                                     api.send(data.username,data.password,data.vault,bal)
-                                    for slot=1,16 do
-                                        if amount > 0 then
-                                            local data = turtle.getItemDetail(slot)
-                                            if data then
-                                                if genID(data) == sel[1] then
-                                                    turtle.select(slot)
-                                                    if amount > turtle.getItemCount() then
-                                                        local ct = turtle.getItemCount()
-                                                        turtle.dropDown()
-                                                        amount = amount - ct
-                                                    else
-                                                        turtle.dropDown(amount)
-                                                        amount = 0
-                                                    end
-                                                end
-                                            end
-                                        end
-                                    end
+                                    dispenseItem(sel[1],amount)
                                     data.products[sel[1]].price = data.products[sel[1]].price * (1+price_change_magnitude)
                                     break
                                 end
@@ -286,6 +362,20 @@ end
 
 --/ Admin UI /--
 local function adminUI()
+    -- Chest Warning
+    if not chest then
+        term.setBackgroundColor(colors.black)
+        term.clear()
+        term.setCursorPos(1,1)
+        print("Dynamic Shop")
+        printError("DANGER")
+        printError("You are not storing your valueables in a chest.")
+        printError("this means your shop is vulnerable to theft.")
+        print()
+        printError("Place a chest on top of your turtle and place your valueables in it.")
+        sleep(5)
+    end
+
     -- Initialization
     term.setBackgroundColor(colors.gray)
     term.clear()
@@ -635,4 +725,4 @@ local function adminUI()
 end
 
 --/ Kernel /--
-parallel.waitForAll(shopRoutine,adminUI,invMgmt)
+parallel.waitForAny(shopRoutine,adminUI,invMgmt)
