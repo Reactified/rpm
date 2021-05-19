@@ -347,9 +347,10 @@ local function shopRoutine()
                         end
                     end
                     local function cancelUiFunction()
+                        local monW,monH = m.getSize()
                         while true do
                             local e,c,x,y = os.pullEvent("monitor_touch")
-                            if y > h-2 then break end
+                            if y > monH-2 then break end
                         end
                     end
                     parallel.waitForAny(vendingFunction,cancelUiFunction)
