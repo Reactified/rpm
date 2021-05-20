@@ -94,9 +94,8 @@ local function installPackage(package)
     log("located package "..package)
 
     local dependencies = getFile("packages/"..package.."/dependencies")
-
     if dependencies then
-        print("downloading dependencies")
+        log("downloading dependencies")
         dependencies = parseDependencies(dependencies)
         for id,dependency in pairs(dependencies) do
             if not data.packages[dependency] then
@@ -127,8 +126,8 @@ end
 -- RPM API
 api = {
     install = function(package)
-        installPackage(package)
-        return true,"package installed"
+        local ok, err = installPackage(package)
+        return ok, err
     end,
 
     uninstall = function(package)
@@ -195,6 +194,16 @@ api = {
             if not manifest then
                 log("failed: could not fetch manifest",true)
                 return false,"failed to fetch manifest"
+            end
+
+            local dependencies = getFile("packages/"..package.."/dependencies")
+            if dependencies then
+                dependencies = parseDependencies(dependencies)
+                for id,dependency in pairs(dependencies) do
+                    if not data.packages[dependency] then
+                        installPackage(dependency)
+                    end
+                end
             end
 
             local manifest = parseManifest(manifest)
