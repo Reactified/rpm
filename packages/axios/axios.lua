@@ -1,6 +1,6 @@
 -- AXIOS | React Industries
 local version = "1"
-local channel = 87124
+local channel = 8712
 os.setComputerLabel("AX-"..tostring(os.getComputerID()))
 
 local modem = peripheral.find("modem")
