@@ -567,7 +567,7 @@ local function masterRoutine()
                                     term.setTextColor(colors.white)
                                     term.setCursorPos(10,9)
                                     transferAMT = read()
-                                elseif y == 11 then
+                                elseif y == 11 and x >= 2 and x <= 8 then
                                     term.setBackgroundColor(colors.black)
                                     term.setTextColor(colors.brown)
                                     term.setCursorPos(10,11)
