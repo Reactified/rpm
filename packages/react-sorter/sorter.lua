@@ -157,6 +157,7 @@ local function fillChest(chest, item, count)
     end
 end
 
+-- Display Name Cache
 local displayNames = {}
 local function getDisplayName(id)
     if displayNames[id] then
@@ -174,6 +175,15 @@ local function getDisplayName(id)
         printError("Could not get ",id)
         return false
     end
+end
+
+local function translateFromDisplayName(name)
+    for i,v in pairs(displayNames) do
+        if v == name then
+            return i
+        end
+    end
+    return name
 end
 
 -- Storage Routine
@@ -406,7 +416,7 @@ local function networkRoutine()
                     end
                 end
             elseif cmd == "fill-chest" then
-                fillChest(message.chest, message.item, message.count)
+                fillChest(message.chest, translateFromDisplayName(message.item), message.count)
             end
         end
     end
