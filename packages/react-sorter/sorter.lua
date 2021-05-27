@@ -144,8 +144,8 @@ local function locateItem(id, exclude)
 end
 
 local function fillChest(chest, item, count)
-    while count > 0 do
-        local chestId,slotId = locateItem(item,chest)
+    for i=1,1000 do
+        local chestId,slotId = locateItem(item, chest)
         if not chestId or not slotId then
             return
         end
@@ -153,7 +153,10 @@ local function fillChest(chest, item, count)
         if slotCount > count then
             slotCount = count
         end
-        count = count - slotCount
+        count = count - placeInChest(chestId,slotId,chest,slotCount)
+        if count <= 0 then
+            return true
+        end
     end
 end
 
@@ -416,7 +419,8 @@ local function networkRoutine()
                     end
                 end
             elseif cmd == "fill-chest" then
-                fillChest(message.chest, translateFromDisplayName(message.item), message.count)
+                local itemName = translateFromDisplayName(message.item)
+                fillChest(message.chest, itemName, message.count)
             end
         end
     end
