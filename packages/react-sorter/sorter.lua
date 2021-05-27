@@ -1,5 +1,5 @@
 -- REACT INDUSTRIES Sorting System
-local configFile = "config"
+local configFile = "config/sorter.cfg"
 
 -- Load Configuration
 local f = fs.open(configFile,"r")
