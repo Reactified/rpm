@@ -63,13 +63,17 @@ end
 local function indexAllChests(recheckCapacity)
     local peripheralList = peripheral.getNames()
     for peripheralListIndex, peripheralName in pairs(peripheralList) do
-        local underscorePosition = string.find(peripheralName,"_")
-
         local networkID = -1
         local shortName = peripheralName
-        if underscorePosition then
-            networkID = tonumber(string.sub(peripheralName,underscorePosition+1,#peripheralName))
-            shortName = string.sub(peripheralName,1,underscorePosition-1)
+        
+        while true do
+            local underscorePosition = string.find(shortName,"_")
+            if underscorePosition then
+                networkID = tonumber(string.sub(shortName,underscorePosition+1,#peripheralName))
+                shortName = string.sub(peripheralName,1,underscorePosition-1)
+            else
+                break
+            end
         end
         if config.core.storageTypes[shortName] then
             local oldCapacity
