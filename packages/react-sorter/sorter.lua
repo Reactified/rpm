@@ -35,6 +35,14 @@ local unmanagedChests = {}
 
 local function moveItem(fromChestID,fromSlot,toChestID,toSlot,quantity)
     if chests[fromChestID] and chests[toChestID] then
+        local oldItem
+        if chests[fromChestID] and chests[fromChestID].contents and chests[fromChestID].contents[fromSlot] then
+            oldItem = chests[fromChestID].contents[fromSlot]
+            chests[fromChestID].contents[fromSlot] = nil
+        end
+        if (chests[toChestID] and chests[toChestID].contents and chests[toChestID].contents[toSlot] == nil) and not (toSlot == nil) then
+            chests[toChestID].contents[toSlot] = oldItem
+        end
         return chests[fromChestID].pushItems(peripheral.getName(chests[toChestID]),fromSlot,quantity,toSlot)
     else
         return 0
