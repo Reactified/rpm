@@ -242,30 +242,29 @@ local function shopRoutine()
         sleep(0.5)
     end
     -- Check for vault
-    if not ccash.contains(data.vault) then
-        while true do
-            m.setBackgroundColor(colors.gray)
-            m.clear()
-            m.setBackgroundColor(data.color)
-            m.setCursorPos(1,1)
-            m.clearLine()
-            m.setCursorPos(1,2)
-            m.clearLine()
-            m.setCursorPos(1,3)
-            m.clearLine()
-            m.setCursorPos(2,2)
-            if data.color == colors.white then
-                m.setTextColor(colors.black)
-            else
-                m.setTextColor(colors.white)
-            end
-            center(data.name,2)
-            term.setBackgroundColor(colors.gray)
-            term.setTextColor(colors.white)
-            center("Shop out of service",h/2)
-            center("Vault account missing",h/2+1)
-            sleep(100)
+    local _,vaultExists = ccash.contains(data.vault)
+    if not vaultExists then
+        m.setBackgroundColor(colors.gray)
+        m.clear()
+        m.setBackgroundColor(data.color)
+        m.setCursorPos(1,1)
+        m.clearLine()
+        m.setCursorPos(1,2)
+        m.clearLine()
+        m.setCursorPos(1,3)
+        m.clearLine()
+        m.setCursorPos(2,2)
+        if data.color == colors.white then
+            m.setTextColor(colors.black)
+        else
+            m.setTextColor(colors.white)
         end
+        center(data.name,2)
+        term.setBackgroundColor(colors.gray)
+        term.setTextColor(colors.white)
+        center("Shop out of service",h/2)
+        center("Vault account missing",h/2+1)
+        os.pullEvent("infinite-yield")
     end
     -- Routine
     while true do
