@@ -190,6 +190,14 @@ local function invMgmt()
     end
 end
 
+--/ Remake Account /--
+if not init then
+    local bal = api.balance(data.username)
+    if bal == -1 then
+        api.register(data.username,data.password)
+    end
+end
+
 --/ Shop Routine /--
 local function shopRoutine()
     -- Check Peripherals
