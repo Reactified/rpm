@@ -755,7 +755,7 @@ powersTwo[0] = bigint("1")
 local bigZero = bigint(0)
 local bigOne = bigint(1)
 
-local function numberToBytes(num, bits, byteSize)
+function numberToBytes(num, bits, byteSize)
 	if bits > #powersTwo then
 		error("Too many bits. Must be <= " .. #powersTwo .. ".")
 	end
@@ -808,7 +808,7 @@ local function numberToBytes(num, bits, byteSize)
 	return results
 end
 
-local function bytesToNumber(bytes, bits, byteSize)
+function bytesToNumber(bytes, bits, byteSize)
 	if bits > #powersTwo then
 		error("Too many bits. Must be <= " .. #powersTwo .. ".")
 	end
@@ -840,14 +840,14 @@ local function bytesToNumber(bytes, bits, byteSize)
 	return tostring(num)
 end
 
-local function encodeBigNumbers(numbers)
+function encodeBigNumbers(numbers)
 	for k, v in pairs(numbers) do
 		numbers[k] = tostring(v)
 	end
 	return numbers
 end
 
-local function stringToBytes(str)
+function stringToBytes(str)
 	local result = {}
 	for i = 1, #str do
 		table.insert(result, string.byte(str, i))
@@ -855,7 +855,7 @@ local function stringToBytes(str)
 	return result
 end
 
-local function bytesToString(bytes)
+function bytesToString(bytes)
 	local str = ""
 	for _, v in pairs(bytes) do
 		str = str .. string.char(v)
@@ -863,7 +863,7 @@ local function bytesToString(bytes)
 	return str
 end
 
-local function modexp(base, exponent, modulus)
+function modexp(base, exponent, modulus)
 	local r = 1
 
 	while true do
@@ -881,7 +881,7 @@ local function modexp(base, exponent, modulus)
 	return r
 end
 
-local function crypt(key, number)
+function crypt(key, number)
 	local exp
 	if key.public then
 		exp = bigint(key.public)
