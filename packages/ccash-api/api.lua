@@ -334,17 +334,21 @@ function vpass(username, password) -- verify user and password combo
     return ok,(err==1)
 end
 
-function log(username, password) -- get transaction logs for us
+function log(username, password, invert) -- get transaction logs for us
     local ok,err = http_request("POST",username.."/log",{
         attempt = password,
     })
-    local txs = {}
-    if ok then
-        for i,v in pairs(err) do
-            txs[1+#err-i] = v
-        end
-    end
-    return ok,txs
+    if invert then
+    	local txs = {}
+    	if ok then
+	        for i,v in pairs(err) do
+	            txs[1+#err-i] = v
+        	end
+	    end
+    	return ok,txs
+	else
+		return ok,err
+	end
 end
 
 function contains(username) -- check if user exists
