@@ -338,7 +338,13 @@ function log(username, password) -- get transaction logs for us
     local ok,err = http_request("POST",username.."/log",{
         attempt = password,
     })
-    return ok,err
+    local txs = {}
+    if ok then
+        for i,v in pairs(err) do
+            txs[1+#err-i] = v
+        end
+    end
+    return ok,txs
 end
 
 function contains(username) -- check if user exists
