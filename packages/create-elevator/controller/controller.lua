@@ -312,4 +312,4 @@ local function rednetRoutine()
 end
 
 -- Start
-parallel.waitForAll(coreRoutine,carCallRoutine)
+parallel.waitForAll(coreRoutine,carCallRoutine,rednetRoutine)
