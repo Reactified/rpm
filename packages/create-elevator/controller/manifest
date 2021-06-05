@@ -1,1 +1,2 @@
 controller.lua > startup.lua
+config.cfg > config/elevator.cfg
