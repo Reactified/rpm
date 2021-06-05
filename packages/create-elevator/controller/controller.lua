@@ -303,8 +303,8 @@ local function rednetRoutine()
         while true do
             local id,cmd = rednet.receive()
             if type(cmd) == "table" then
-                if cmd[key] and type(cmd[floor]) == "number" then
-                    calls[cmd[floor]] = true
+                if cmd[key] and type(cmd["floor"]) == "number" then
+                    calls[cmd["floor"]] = true
                 end
             end
         end
