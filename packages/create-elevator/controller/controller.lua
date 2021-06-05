@@ -1,37 +1,18 @@
 -- REACT INDUSTRIES | Elevator Controller
-local clutchSide = "top"
-local gearshiftSide = "back"
-local doorControlSide = "bottom"
+local configFile = "config/elevator.cfg"
 
-local carLinkSide = "right"
-local callInputSide = "left"
+-- Load Config
+local f = fs.open(configFile,"r")
+if not f then
+    printError("Missing elevator config.")
+end
+local settings = textutils.unserialise(f.readAll())
+if not settings then
+    printError("Corrupted/incomplete config.")
+end
+f.close()
 
-local doorOpenTime = 5
-local doorMovementTime = 1
-local movementTimeout = 30
-
-local driveInverted = false
-local doorInverted = false
-
-local limitSwitchSide = "front"
-local limitSwitches = {
-    [15] = "top",
-    [14] = "bottom",
-}
-local bottomLimitSwitchFloor = 1
-local topLimitSwitchFloor = 3
-
-local floors = {
-    [1] = 0,
-    [2] = 6,
-    [3] = 12,
-}
-local floorIndex = {
-    1,
-    2,
-    3,
-}
-
+-- Variables
 local position = 0
 local floor = 0
 local direction = 0
@@ -41,7 +22,7 @@ local calls = {}
 -- Pre-Initialization
 local lowestFloor = 0
 local highestFloor = 0
-for i,v in pairs(floors) do
+for i,v in pairs(settings.floors) do
     if i < lowestFloor then
         lowestFloor = i
     end
@@ -53,14 +34,14 @@ end
 
 -- Mechanical Functions
 local function shaftDirection(state)
-    rs.setOutput(clutchSide,state == 0)
-    rs.setOutput(gearshiftSide,state == -1)
+    rs.setOutput(settings.clutchSide,state == 0)
+    rs.setOutput(settings.gearshiftSide,state == -1)
 end
 local function doorControl(state)
-    rs.setOutput(doorControlSide,state)
+    rs.setOutput(settings.doorControlSide,state)
 end
 local function checkLimitSwitch()
-    return limitSwitches[rs.getAnalogInput(limitSwitchSide)] or false
+    return settings.limitSwitches[rs.getAnalogInput(settings.limitSwitchSides)] or false
 end
 
 -- Logic Functions
@@ -74,11 +55,11 @@ end
 
 local function up()
     doorControl(false)
-    shaftDirection(invert(1,driveInverted))
+    shaftDirection(invert(1,settings.driveInverted))
 end
 local function down()
     doorControl(false)
-    shaftDirection(invert(-1,driveInverted))
+    shaftDirection(invert(-1,settings.driveInverted))
 end
 local function stop()
     shaftDirection(0)
@@ -86,14 +67,14 @@ end
 
 local function openDoor()
     doorControl(true)
-    shaftDirection(invert(1,doorInverted))
-    sleep(doorMovementTime)
+    shaftDirection(invert(1,settings.doorInverted))
+    sleep(settings.doorMovementTime)
     shaftDirection(0)
 end
 local function closeDoor()
     doorControl(true)
-    shaftDirection(invert(-1,doorInverted))
-    sleep(doorMovementTime)
+    shaftDirection(invert(-1,settings.doorInverted))
+    sleep(settings.doorMovementTime)
     shaftDirection(0)
 end
 
@@ -102,8 +83,8 @@ local secondsPerMeter = 0
 local metersPerSecond = 0
 local function homingSequence()
     local switch = checkLimitSwitch()
-    local topLimitSwitchLevel = floors[topLimitSwitchFloor]
-    local bottomLimitSwitchLevel = floors[bottomLimitSwitchFloor]
+    local topLimitSwitchLevel = settings.floors[settings.topLimitSwitchFloor]
+    local bottomLimitSwitchLevel = settings.floors[settings.bottomLimitSwitchFloor]
     print("[Homing] Limit switch: "..tostring(switch))
     -- close doors
     print("[Homing] Closing doors")
@@ -111,7 +92,7 @@ local function homingSequence()
     -- go to bottom
     if switch ~= "bottom" then
         print("[Homing] Going to bottom")
-        local timeoutTimer = os.startTimer(movementTimeout)
+        local timeoutTimer = os.startTimer(settings.movementTimeout)
         while checkLimitSwitch() ~= "bottom" do
             down()
             local e,t = os.pullEvent()
@@ -147,20 +128,20 @@ local function homingSequence()
     metersPerSecond = ( topLimitSwitchLevel - bottomLimitSwitchLevel) / deltaTime
     secondsPerMeter = 1 / metersPerSecond
     print("[Homing] Measured speed: "..tostring(metersPerSecond).." m/s")
-    floor = topLimitSwitchFloor
+    floor = settings.topLimitSwitchFloor
     position = topLimitSwitchLevel
 end
 local function operateDoor()
     print("[Doors] Opening")
     openDoor()
-    sleep(doorOpenTime)
+    sleep(settings.doorOpenTime)
     print("[Doors] Closing")
     closeDoor()
     os.queueEvent("doorClosed")
 end
 local function gotoFloor(selectedFloor)
     print("[Drive] Going to "..tostring(selectedFloor))
-    local floorLevel = floors[selectedFloor]
+    local floorLevel = settings.floors[selectedFloor]
     local delta = floorLevel-position
     local direction = 1
 
@@ -182,13 +163,13 @@ local function gotoFloor(selectedFloor)
     position = floorLevel
     floor = selectedFloor
     stop()
-    if selectedFloor == topLimitSwitchFloor then
+    if selectedFloor == settings.topLimitSwitchFloor then
         if checkLimitSwitch() ~= "top" then
             print("[Drive] Misaligned with top limit switch, starting homing.")
             homingSequence()
             operateDoor()
         end
-    elseif selectedFloor == bottomLimitSwitchFloor then
+    elseif selectedFloor == settings.bottomLimitSwitchFloor then
         if checkLimitSwitch() ~= "bottom" then
             print("[Drive] Misaligned with bottom limit switch, starting homing.")
             homingSequence()
@@ -224,10 +205,10 @@ local function coreRoutine()
         updateDisplayStatus()
 
         -- outside call input
-        if rs.getInput(callInputSide) then
-            local inputFloor = 16 - rs.getAnalogInput(callInputSide)
-            calls[floorIndex[inputFloor]] = true
-            print("External call entered: "..tostring(floorIndex[inputFloor]))
+        if rs.getInput(settings.callInputSide) then
+            local inputFloor = 16 - rs.getAnalogInput(settings.callInputSide)
+            calls[settings.floorIndex[inputFloor]] = true
+            print("External call entered: "..tostring(settings.floorIndex[inputFloor]))
         end
 
         -- state logic
@@ -289,11 +270,11 @@ end
 local function carCallRoutine()
     while true do
         os.pullEvent('redstone')
-        if rs.getInput(carLinkSide) then
+        if rs.getInput(settings.carLinkSide) then
             local startTime = os.epoch("utc")
             while true do
                 os.pullEvent("redstone")
-                if rs.getInput(carLinkSide) == false then
+                if rs.getInput(settings.carLinkSide) == false then
                     break
                 end
             end
@@ -304,9 +285,9 @@ local function carCallRoutine()
             print("detected as "..tostring(inputFloor))
             if inputFloor == 0 then
                 calls[floor] = true
-            elseif floorIndex[inputFloor] then
-                print("floor input "..tostring(floorIndex[inputFloor]))
-                calls[floorIndex[inputFloor]] = true
+            elseif settings.floorIndex[inputFloor] then
+                print("floor input "..tostring(settings.floorIndex[inputFloor]))
+                calls[settings.floorIndex[inputFloor]] = true
             end
             os.queueEvent("callInput")
         end
