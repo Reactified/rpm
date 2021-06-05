@@ -163,6 +163,7 @@ local function gotoFloor(selectedFloor)
     position = floorLevel
     floor = selectedFloor
     stop()
+    sleep(0.3)
     if selectedFloor == settings.topLimitSwitchFloor then
         if checkLimitSwitch() ~= "top" then
             print("[Drive] Misaligned with top limit switch, starting homing.")
@@ -290,6 +291,22 @@ local function carCallRoutine()
                 calls[settings.floorIndex[inputFloor]] = true
             end
             os.queueEvent("callInput")
+        end
+    end
+end
+
+-- Rednet Routine
+local key = "reactElevatorCommand"
+local function rednetRoutine()
+    if peripheral.find("modem") then
+        rednet.open(peripheral.getName(peripheral.find("modem")))
+        while true do
+            local id,cmd = rednet.receive()
+            if type(cmd) == "table" then
+                if cmd[key] and type(cmd[floor]) == "number" then
+                    calls[cmd[floor]] = true
+                end
+            end
         end
     end
 end
