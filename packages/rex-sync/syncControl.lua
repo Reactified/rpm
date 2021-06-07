@@ -4,7 +4,7 @@ w, h = term.getSize()
 term.clear()
 
 local api = syncApi
-
+syncApi.loadData()
 
 function drawHeader(header)
     bg = colors.blue
@@ -38,7 +38,7 @@ function syncControlsMenu()
 
     term.setTextColor(colors.gray)
     term.setCursorPos(2, h - 1)
-    term.write(" Sync Client - " .. syncApi.t["ip"] .. ":" .. syncApi.t["port"])
+    term.write(" Sync Client - " .. api.t["ip"] .. ":" .. api.t["port"])
 
     menuIndex = currentMenu
     while menuIndex == currentMenu do
