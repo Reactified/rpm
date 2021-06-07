@@ -525,11 +525,11 @@ local function masterRoutine()
                                         drawLogo(2,yp)
                                         term.setCursorPos(5,yp)
                                         term.setBackgroundColor(colors.black)
-                                        term.setTextColor(colors.white)
+                                        term.setTextColor(colors.lightGray)
                                         if i == 1 then
                                             term.setTextColor(colors.brown)
                                         elseif i == 2 then
-                                            term.setTextColor(colors.lightGray)
+                                            term.setTextColor(colors.white)
                                         elseif i == 3 then
                                             term.setTextColor(colors.orange)
                                         end
