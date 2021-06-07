@@ -1,1 +1,5 @@
-
+rsync.lua > RSync/RSync.lua
+commApi.lua > RSync/commApi.lua
+syncApi.lua > RSync/syncApi.lua
+syncControl.lua > RSync/syncControl.lua
+sync-settings.cfg > RSync/.sync-settings
