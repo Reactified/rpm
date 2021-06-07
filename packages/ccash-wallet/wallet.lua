@@ -261,7 +261,7 @@ local function masterRoutine()
                         "Transfer",
                         "Transactions",
                         "Settings",
-                        --"Leaderboard",
+                        "Leaderboard",
                     }
                     local tab = 1
                     local scroll = 1
@@ -501,11 +501,17 @@ local function masterRoutine()
                         elseif tab == 5 then
                             apiDebounce()
                             apiBusy = true
-                            local leaderboard = api.leaderboard()
+                            if not leaderboard then
+                                if not fs.exists("/apis/leaderboard.lua") then
+                                    shell.run("rpm install ccash-api/leaderboard")
+                                end
+                                os.loadAPI("apis/leaderboard.lua")
+                            end
+                            local board = leaderboard.leaderboard()
                             apiBusy = false
                             local yp = 5
                             for i=1,math.floor((h-4)/3) do
-                                if leaderboard[i] then
+                                if board[i] then
                                     drawLogo(2,yp)
                                     term.setCursorPos(5,yp)
                                     term.setBackgroundColor(colors.black)
@@ -517,11 +523,11 @@ local function masterRoutine()
                                     elseif i == 3 then
                                         term.setTextColor(colors.orange)
                                     end
-                                    write("#"..tostring(i)..": "..leaderboard[i][1])
+                                    write("#"..tostring(i)..": "..board[i][1])
                                     term.setCursorPos(5,yp+1)
                                     term.setBackgroundColor(colors.black)
                                     term.setTextColor(colors.gray)
-                                    write(tostring(leaderboard[i][2]).." "..csn)
+                                    write(tostring(board[i][2]).." "..csn)
                                     yp = yp + 3
                                 end
                             end
