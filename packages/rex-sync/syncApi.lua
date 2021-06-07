@@ -1,6 +1,6 @@
-os.loadAPI("/RSync/commApi.lua")
+os.loadAPI("RSync/commApi.lua")
 
-path = "/RSync/.sync-settings"
+path = "RSync/.sync-settings"
 t = {}
 function saveData()
     f = fs.open(path, "w")
