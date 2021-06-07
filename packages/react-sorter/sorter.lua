@@ -32,8 +32,10 @@ end
 -- Storage Functions
 local chests = {}
 local unmanagedChests = {}
+local fullChests = {}
 
 local function moveItem(fromChestID,fromSlot,toChestID,toSlot,quantity)
+    fullChests[fromChestID] = false
     if chests[fromChestID] and chests[toChestID] then
         local oldItem
         if chests[fromChestID] and chests[fromChestID].contents and chests[fromChestID].contents[fromSlot] then
@@ -105,7 +107,6 @@ local function getChestType(id)
     end
 end
 
-local fullChests = {}
 local function placeInChest(fromChestID,fromSlot,chestID,count)
     if fullChests[chestID] then
         return 0
