@@ -105,8 +105,16 @@ local function getChestType(id)
     end
 end
 
+local fullChests = {}
 local function placeInChest(fromChestID,fromSlot,chestID,count)
-    return moveItem(fromChestID,fromSlot,chestID,nil,count)
+    if fullChests[chestID] then
+        return 0
+    end
+    local movedItems = moveItem(fromChestID,fromSlot,chestID,nil,count)
+    if movedItems <= 0 then
+        fullChests[chestID] = true
+    end
+    return movedItems
 end
 
 local function depositItem(chestID,slotID)
