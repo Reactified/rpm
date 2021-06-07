@@ -1,7 +1,6 @@
 local channel = 1984
 local modem = peripheral.find("modem")
 
-modem.open(channel)
 local function send(id, str)
     modem.transmit(channel, os.getComputerID(), {
         target = id,
@@ -9,6 +8,7 @@ local function send(id, str)
     })
 end
 local function recv(timeout, idFilter)
+    modem.open(channel)
     local tmr
     if timeout then
         tmr = os.startTimer(timeout)
@@ -29,18 +29,25 @@ local function recv(timeout, idFilter)
             end
         end
     end
+    modem.close(channel)
 end
 
 local server = 239
 function leaderboard()
-    send(server,"[LEADERBOARD-REQUEST]")
-    local id,cmd = recv(1,server)
-    return cmd or {}
+    if peripheral.find("modem") then
+        send(server,"[LEADERBOARD-REQUEST]")
+        local id,cmd = recv(1,server)
+        return cmd or {}
+    else
+        return {}
+    end
 end
 
 function submit(username)
-    send(server,{
-        command = "LEADERBOARD-SUBMISSION",
-        user = username,
-    })
+    if peripheral.find("modem") then
+        send(server,{
+            command = "LEADERBOARD-SUBMISSION",
+            user = username,
+        })
+    end
 end
