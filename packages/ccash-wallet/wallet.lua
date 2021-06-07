@@ -499,16 +499,18 @@ local function masterRoutine()
                             term.setCursorPos(2,14)
                             write("Delete Account")
                         elseif tab == 5 then
-                            apiDebounce()
-                            apiBusy = true
                             if not leaderboard then
                                 if not fs.exists("/apis/leaderboard.lua") then
-                                    shell.run("rpm install ccash-api/leaderboard")
+                                    if fs.exists('/rpm.lua') then
+                                        os.loadAPI("/rpm.lua")
+                                        rpm.api.install("ccash-api/leaderboard")
+                                    end
                                 end
-                                os.loadAPI("apis/leaderboard.lua")
+                                if fs.exists("/apis/leaderboard.lua") then
+                                    os.loadAPI("apis/leaderboard.lua")
+                                end
                             end
                             local board = leaderboard.leaderboard()
-                            apiBusy = false
                             local yp = 5
                             for i=1,math.floor((h-4)/3) do
                                 if board[i] then
