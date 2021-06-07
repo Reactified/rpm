@@ -1,10 +1,9 @@
-os.loadAPI("/RSync/**syncApi.lua")
+os.loadAPI("RSync/syncApi.lua")
 
 w, h = term.getSize()
 term.clear()
 
 local api = syncApi
-syncApi.loadData()
 
 function drawHeader(header)
     bg = colors.blue
@@ -285,10 +284,10 @@ function frontend()
 end
 
 function backend()
+    api.loadData()
     while true do
         menuName = menuIndexs[currentMenu]
         drawHeader(menuName)
-    
         local e, c, x, y = os.pullEvent("mouse_click")
         if typing == false then
             if y < 4 then
