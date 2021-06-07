@@ -447,4 +447,8 @@ local function networkRoutine()
 end
 
 -- Run
-parallel.waitForAll(networkRoutine,storageRoutine)
+while true do
+    parallel.waitForAll(networkRoutine,storageRoutine)
+    printError("Crashed | Restarting in 5 seconds...")
+    sleep(5)
+end
