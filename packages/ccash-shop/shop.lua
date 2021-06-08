@@ -35,7 +35,7 @@ end
 
 --/ ID System /--
 local function genID(item)
-    return item.name.."/"..tostring(item.damage)
+    return item.name.."/"..tostring(item.damage or item.nbt)
 end
 
 --/ Item Dispensing /--
