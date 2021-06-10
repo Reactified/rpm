@@ -16,10 +16,14 @@ while true do
   term.setCursorPos(2,3)
   write("Fuel: "..tostring(turtle.getFuelLevel()).."/"..tostring(turtle.getFuelLimit()))
   local e,s,c,r,m = os.pullEvent("modem_message")
-  if c == channel and r == 1 then
+  if c == channel and r == os.getComputerID() then
     if type(m) == "string" then
       local ok,err = pcall(loadstring(m))
       modem.transmit(channel,os.getComputerID(),{ok,err})
+    end
+  elseif c == channel and r == 0 then
+    if type(m) == "string" then
+      pcall(loadstring(m))
     end
   end
 end
