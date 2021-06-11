@@ -304,7 +304,7 @@ function admin.user(username, admin_password, balance, password) -- add user wit
 end
 
 function sendfunds(username, target, amount, password) -- transfer money
-    local ok,err = http_request("POST",username.."/send/"..target.."/amount={"..tostring(amount).."}",nil,password) 
+    local ok,err = http_request("POST",username.."/send/"..target.."/amount="..tostring(amount),nil,password) 
     return ok,err,enum[err]
 end
 
@@ -316,7 +316,7 @@ function changepass(username, password, new_password) -- change password
 end
 
 function admin.bal(username, admin_password, balance) -- admin set balance
-    local ok,err = http_request("PATCH","admin/"..username.."/bal/amount={"..tostring(balance).."}",nil,admin_password) 
+    local ok,err = http_request("PATCH","admin/"..username.."/bal/amount="..tostring(balance),nil,admin_password) 
     return ok,err,enum[err]
 end
 
