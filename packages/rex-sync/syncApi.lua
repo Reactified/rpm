@@ -45,8 +45,11 @@ end
 
 function getFilesList()
     api.sendString("[List]")
-    data = api.receiveString()
-    return mysplit(data, ",")
+    data = api.receiveString(true)
+    if data ~= false then
+        return mysplit(data, ",")
+    end
+    return {}
 end
 
 function getAllFiles()
@@ -98,7 +101,7 @@ function sendAllFiles()
 end
 
 function registerComputer()
-    api.sendString("[Register]" .. os.getComputerLabel())
+        api.sendString("[Register]" .. os.getComputerLabel())
 end
 
 function clearMessages()
@@ -115,4 +118,7 @@ end
 
 
 registerComputer()
+
+
+
 clearMessages()
