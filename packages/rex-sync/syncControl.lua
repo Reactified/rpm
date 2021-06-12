@@ -3,6 +3,10 @@ os.loadAPI("RSync/syncApi.lua")
 w, h = term.getSize()
 term.clear()
 
+if os.getComputerLabel() == "" then
+    print("Unable to register computer, try adding a computer label")
+end
+
 local api = syncApi
 
 function drawHeader(header)
@@ -103,15 +107,17 @@ function searchFunction(list)
     else
         local returnList = {}
         for i,v in pairs(list) do
-            if string.find(v,search) then
+            if string.find(v:lower(),search:lower()) then
                 table.insert(returnList,v)
             end
         end
         return returnList
     end
 end
-function localSyncMenu()
-    allList = api.getLocalFiles()
+function localSyncMenu(first)
+    if first == true then
+        allList = api.getLocalFiles()
+    end
     currentList = searchFunction(allList)
     
     paintutils.drawFilledBox(1, 4, w, h, colors.black)
@@ -134,6 +140,12 @@ function localSyncMenu()
                 typing = true
                 while typing do
                     currentList = searchFunction(allList)
+                    if listOffset < 1 then
+                        listOffset = 1
+                    end
+                    if listOffset > #currentList then
+                        listOffset = #currentList
+                    end
                     drawMenuList()
                     
                     paintutils.drawFilledBox(2, 5, w-1, 5, colors.lightGray)
@@ -157,17 +169,18 @@ function localSyncMenu()
             elseif y >= 7 and y <= h-1 then
                 index = y - 7
                 item = getValue(index)
-            
-                paintutils.drawFilledBox(2, y, w-1, y, colors.grey)
-                term.setBackgroundColor(colors.gray)
-                term.setTextColor(colors.white)
-                term.setCursorPos(2,y)
-                term.write(item)
+                if item ~= "" then
+                    paintutils.drawFilledBox(2, y, w-1, y, colors.grey)
+                    term.setBackgroundColor(colors.gray)
+                    term.setTextColor(colors.white)
+                    term.setCursorPos(2,y)
+                    term.write(item)
 
-                api.clearMessages()
-                api.sendFile(item)
+                    api.clearMessages()
+                    api.sendFile(item)
 
-                sleep(0.5)
+                    sleep(0.5)
+                end
                 break
             end
         elseif e == "mouse_scroll" then
@@ -182,11 +195,13 @@ function localSyncMenu()
         end
     end
     if menuIndex == currentMenu then
-        localSyncMenu()
+        localSyncMenu(false)
     end
 end
-function serverSyncMenu()
-    allList = api.getFilesList()
+function serverSyncMenu(first)
+    if first == true then
+        allList = api.getFilesList()
+    end
     currentList = searchFunction(allList)
     paintutils.drawFilledBox(1, 4, w, h, colors.black)
 
@@ -208,6 +223,12 @@ function serverSyncMenu()
                 typing = true
                 while typing do
                     currentList = searchFunction(allList)
+                    if listOffset < 1 then
+                        listOffset = 1
+                    end
+                    if listOffset > #currentList then
+                        listOffset = #currentList
+                    end
                     drawMenuList()
                     
                     paintutils.drawFilledBox(2, 5, w-1, 5, colors.lightGray)
@@ -231,18 +252,20 @@ function serverSyncMenu()
             elseif y >= 7 and y <= h-1 then
                 index = y - 7
                 item = getValue(index)
-            
-                paintutils.drawFilledBox(2, y, w-1, y, colors.grey)
-                term.setBackgroundColor(colors.gray)
-                term.setTextColor(colors.white)
-                term.setCursorPos(2,y)
-                term.write(item)
+                if item ~= "" then
+                    paintutils.drawFilledBox(2, y, w-1, y, colors.grey)
+                    term.setBackgroundColor(colors.gray)
+                    term.setTextColor(colors.white)
+                    term.setCursorPos(2,y)
+                    term.write(item)
 
-                api.clearMessages()
-                api.getFile(item)
+                    api.clearMessages()
+                    api.getFile(item)
 
-                sleep(0.5)
-                break
+                    sleep(0.5)
+                    
+                    break
+                end
             end
         elseif e == "mouse_scroll" then
             listOffset = listOffset + c;
@@ -256,7 +279,7 @@ function serverSyncMenu()
         end
     end
     if menuIndex == currentMenu then
-        serverSyncMenu()
+        serverSyncMenu(false)
     end
 
 end
@@ -274,7 +297,7 @@ menuIndexs = {
 }
 function drawUI()
     menuName = menuIndexs[currentMenu]
-    menus[menuName]()
+    menus[menuName](true)
 end
 
 function frontend()
@@ -307,7 +330,6 @@ function backend()
     end
 end
 
-parallel.waitForAll(frontend,backend)
-
-
-paintutils.drawFilledBox(2, 5, w-1, h - 1, colors.gray)
+if os.getComputerLabel() ~= "" then
+    parallel.waitForAll(frontend,backend)
+end
