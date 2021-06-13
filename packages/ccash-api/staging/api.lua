@@ -278,10 +278,9 @@ local enum = {
 	[-1] = "User Not Found",
 	[-2] = "Wrong Password",
 	[-3] = "Invalid Request",
-	[-4] = "Wrong Admin Password",
-	[-5] = "Name Too Long",
-	[-6] = "User Already Exists",
-	[-7] = "Insufficient Funds",
+	[-4] = "Name Too Long",
+	[-5] = "User Already Exists",
+	[-6] = "Insufficient Funds",
 }
 
 admin = {} -- holds the admin only functions
@@ -325,19 +324,9 @@ function vpass(username, password) -- verify user and password combo
     return ok,(err==1),enum[err]
 end
 
-function log(username, password, invert) -- get transaction logs for us
-    local ok,err = http_request("POST",username.."/log",nil,password)
-    if invert then
-    	local txs = {}
-    	if ok then
-	        for i,v in pairs(err) do
-	            txs[1+#err-i] = v
-        	end
-	    end
-    	return ok,txs
-	else
-		return ok,err
-	end
+function log(username, password) -- get transaction logs for us
+    local ok,err = http_request("GET",username.."/log",nil,password)
+    return ok,err
 end
 
 function contains(username) -- check if user exists
@@ -366,8 +355,8 @@ function admin.delete(username, admin_password) -- admin delete user account
 end
 
 function ping()
-	local ok,err = admin.vpass("password")
-	return ok
+    local ok,err = http_request("GET","ping")
+    return ok
 end
 
 -- Simple API
