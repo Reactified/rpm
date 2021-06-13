@@ -283,8 +283,7 @@ local function timingRoutine()
     while true do
         local day = os.epoch("utc")/86400000
         local dayPercent = 1-(day-math.floor(day))
-        --sleep(dayPercent*86400)
-        sleep(10)
+        sleep(dayPercent*86400)
         print("-- PAYMENT TIMER --")
         -- this code will run once a day at UTC midnight
         for username,userdata in pairs(data.users) do
