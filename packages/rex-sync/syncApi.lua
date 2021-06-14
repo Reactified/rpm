@@ -12,8 +12,7 @@ function loadData()
     if fs.exists(path) then
         f = fs.open(path, "r")
     else
-        t["ip"] = "0.0.0.0"
-        t["port"] = 8000
+        t["address"] = "http://0.0.0.0:8000"
         saveData()
         f = fs.open(path, "r")
     end
@@ -22,7 +21,7 @@ end
 loadData()
 
 api = commApi
-api.setAddress(t["ip"], t["port"])
+api.setAddress(t["address"])
 
 function getFile(filename)
     api.sendString("[Download]" .. filename)
