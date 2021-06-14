@@ -26,16 +26,33 @@ local function httpRequest(rawQuery)
     end
     return ""
 end
-
-function sendString(rawQuery)
+function getIDTag()
+    local idTag = "<" .. os.getComputerID() .. ">"
+    return idTag
+end
+function getSendStringMessages(rawQuery)
     query = rawQuery .. "</" .. "end>"
-    idTag = "<" .. os.getComputerID() .. ">"
+    local idTag = getIDTag()
     maxLength = 50 - #idTag 
     n = string.len(query)
     pn = math.ceil(n / maxLength)
-    returnData = ""
+    parts = {}
     for i = 1, pn do
         part = string.sub(query, maxLength*(i-1) + 1, maxLength*i)
+        parts[#parts + 1] = part
+    end    
+    return parts
+end
+
+function sendString(rawQuery)
+    pn = getSendStringMessages(rawQuery)
+    local idTag = getIDTag()
+
+    httpRequest(idTag .. "[message" .. "Size]" .. #pn .. "</" .. "end>")
+
+    returnData = ""
+    for i = 1, #pn do
+        part = pn[i]
         returnData = httpRequest(idTag .. part)
     end
     return returnData
