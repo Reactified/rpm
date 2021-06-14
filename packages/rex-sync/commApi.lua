@@ -1,9 +1,7 @@
-ip = "0.0.0.0"
-port = "0000"
+address = "http://0.0.0.0:8000"
 
-function setAddress(_ip, _port)
-    ip = _ip
-    port = _port
+function setAddress(_address)
+    address = _address
 end
 
 local fetchInterval = 5
@@ -18,7 +16,7 @@ local function httpRequest(rawQuery)
         end
     end
 
-    local stream = http.get("http://"..ip..":"..port.."/"..query,headers)
+    local stream = http.get(address .. "/"..query,headers)
     if stream then
         local data = stream.readAll()
         stream.close()
