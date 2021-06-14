@@ -41,7 +41,7 @@ function syncControlsMenu()
 
     term.setTextColor(colors.gray)
     term.setCursorPos(2, h - 1)
-    term.write(" Sync Client - " .. api.t["ip"] .. ":" .. api.t["port"])
+    term.write(api.t["address"])
 
     menuIndex = currentMenu
     while menuIndex == currentMenu do
