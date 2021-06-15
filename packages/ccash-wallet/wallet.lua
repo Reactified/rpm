@@ -510,49 +510,50 @@ local function masterRoutine()
                                 if fs.exists("/apis/leaderboard.lua") then
                                     os.loadAPI("apis/leaderboard.lua")
                                 end
-                            end
-                            local board = leaderboard.leaderboard()
-                            local onLeaderboard = false
-                            for i,v in pairs(board) do
-                                if v[1] == username then
-                                    onLeaderboard = true
-                                end
-                            end
-                            if onLeaderboard or joinedLeaderboard then
-                                local yp = 5
-                                for i=1,math.floor((h-4)/3) do
-                                    if board[i] then
-                                        drawLogo(2,yp)
-                                        term.setCursorPos(5,yp)
-                                        term.setBackgroundColor(colors.black)
-                                        term.setTextColor(colors.lightGray)
-                                        if i == 1 then
-                                            term.setTextColor(colors.brown)
-                                        elseif i == 2 then
-                                            term.setTextColor(colors.white)
-                                        elseif i == 3 then
-                                            term.setTextColor(colors.orange)
-                                        end
-                                        write("#"..tostring(i)..": "..board[i][1])
-                                        term.setCursorPos(5,yp+1)
-                                        term.setBackgroundColor(colors.black)
-                                        term.setTextColor(colors.gray)
-                                        write(tostring(board[i][2]).." "..csn)
-                                        yp = yp + 3
+                            else
+                                local board = leaderboard.leaderboard()
+                                local onLeaderboard = false
+                                for i,v in pairs(board) do
+                                    if v[1] == username then
+                                        onLeaderboard = true
                                     end
                                 end
-                            else
-                                term.setTextColor(colors.brown)
-                                term.setBackgroundColor(colors.black)
-                                term.setCursorPos(2,5)
-                                write("Leaderboard")
-                                term.setCursorPos(2,6)
-                                term.setTextColor(colors.lightGray)
-                                write("To view, join the board.")
-                                term.setCursorPos(2,8)
-                                term.setTextColor(colors.gray)
-                                term.setBackgroundColor(colors.brown)
-                                write(" Join ")
+                                if onLeaderboard or joinedLeaderboard then
+                                    local yp = 5
+                                    for i=1,math.floor((h-4)/3) do
+                                        if board[i] then
+                                            drawLogo(2,yp)
+                                            term.setCursorPos(5,yp)
+                                            term.setBackgroundColor(colors.black)
+                                            term.setTextColor(colors.lightGray)
+                                            if i == 1 then
+                                                term.setTextColor(colors.brown)
+                                            elseif i == 2 then
+                                                term.setTextColor(colors.white)
+                                            elseif i == 3 then
+                                                term.setTextColor(colors.orange)
+                                            end
+                                            write("#"..tostring(i)..": "..board[i][1])
+                                            term.setCursorPos(5,yp+1)
+                                            term.setBackgroundColor(colors.black)
+                                            term.setTextColor(colors.gray)
+                                            write(tostring(board[i][2]).." "..csn)
+                                            yp = yp + 3
+                                        end
+                                    end
+                                else
+                                    term.setTextColor(colors.brown)
+                                    term.setBackgroundColor(colors.black)
+                                    term.setCursorPos(2,5)
+                                    write("Leaderboard")
+                                    term.setCursorPos(2,6)
+                                    term.setTextColor(colors.lightGray)
+                                    write("To view, join the board.")
+                                    term.setCursorPos(2,8)
+                                    term.setTextColor(colors.gray)
+                                    term.setBackgroundColor(colors.brown)
+                                    write(" Join ")
+                                end
                             end
                         end
                         -- Event Handling
