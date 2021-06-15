@@ -227,10 +227,10 @@ end
 
 
 -- HTTP Functions
-local function http_request(method, option, args, timeout)
+local function http_request(method, option, args, password)
     local res, body
 
-    if method ~= "GET" then
+    if method ~= "GET" and args then
         body = json.encode(args)
     end
 
@@ -239,7 +239,8 @@ local function http_request(method, option, args, timeout)
         method = method, 
         body = body,
         headers = {
-            ["Content-Type"] = "application/json"
+            ["Content-Type"] = "application/json",
+			["Password"] = password,
         }
     })
 
@@ -271,89 +272,62 @@ local function http_request(method, option, args, timeout)
 end
 
 -- Full API
+local enum = {
+	[1] = "Success",
+	[0] = "Unknown Error",
+	[-1] = "User Not Found",
+	[-2] = "Wrong Password",
+	[-3] = "Invalid Request",
+	[-4] = "Name Too Long",
+	[-5] = "User Already Exists",
+	[-6] = "Insufficient Funds",
+}
+
 admin = {} -- holds the admin only functions
 
 function admin.close(admin_password) -- shutdown server
-    local ok,err = http_request("POST","admin/close",{
-        attempt = admin_password,
-    })
-    return ok,err
+    local ok,err = http_request("POST","admin/close",nil,admin_password)
+    return ok,err,enum[err]
 end
 
 function user(username, password) -- register
-    local ok,err = http_request("POST","user",{
-        name = username,
-        init_pass = password,
-    }) 
-    return ok,err
+    local ok,err = http_request("POST","user/"..username,nil,password) 
+    return ok,err,enum[err]
 end
 
 function admin.user(username, admin_password, balance, password) -- add user with balance
-    local ok,err = http_request("POST","admin/user",{
-        name = username,
-        attempt = admin_password,
-        init_bal = balance,
-        init_pass = password,
-    }) 
-    return ok,err
+    local ok,err = http_request("POST","admin/user/"..username.."?init_bal={"..tostring(balance).."}",password,admin_password) 
+    return ok,err,enum[err]
 end
 
 function sendfunds(username, target, amount, password) -- transfer money
-    local ok,err = http_request("POST","sendfunds",{
-        a_name = username,
-        b_name = target,
-        amount = amount,
-        attempt = password,
-    }) 
-    return ok,err
+    local ok,err = http_request("POST",username.."/send/"..target.."?amount="..tostring(amount),nil,password) 
+    return ok,err,enum[err]
 end
 
 function changepass(username, password, new_password) -- change password
-    local ok,err = http_request("PATCH","changepass",{
-        name = username,
-        attempt = password,
-        new_pass = new_password,
-    }) 
-    return ok,(err==1)
+    local ok,err = http_request("PATCH",username.."/pass/change",new_password,password) 
+    return ok,(err==1),enum[err]
 end
 
 function admin.bal(username, admin_password, balance) -- admin set balance
-    local ok,err = http_request("PATCH","admin/"..username.."/bal",{
-        name = username,
-        attempt = admin_password,
-        amount = balance,
-    }) 
-    return ok,err
+    local ok,err = http_request("PATCH","admin/"..username.."/bal?amount="..tostring(balance),nil,admin_password) 
+    return ok,err,enum[err]
 end
 
 function vpass(username, password) -- verify user and password combo
-    local ok,err = http_request("POST","vpass",{
-        name = username,
-        attempt = password,
-    })
-    return ok,(err==1)
+    local ok,err = http_request("GET",username.."/pass/verify",nil,password)
+    return ok,(err==1),enum[err]
 end
 
-function log(username, password, invert) -- get transaction logs for us
-    local ok,err = http_request("POST",username.."/log",{
-        attempt = password,
-    })
-    if invert then
-    	local txs = {}
-    	if ok then
-	        for i,v in pairs(err) do
-	            txs[1+#err-i] = v
-        	end
-	    end
-    	return ok,txs
-	else
-		return ok,err
-	end
+function log(username, password) -- get transaction logs for us
+    local ok,err = http_request("GET",username.."/log",nil,password)
+    return ok,err
 end
 
 function contains(username) -- check if user exists
     local ok,err = http_request("GET","contains/"..username)
-    return ok,err
+    return ok,err,enum[err]
 end
 
 function bal(username) -- check user balance
@@ -362,54 +336,46 @@ function bal(username) -- check user balance
 end
 
 function admin.vpass(admin_password) -- verify admin password
-    local ok,err = http_request("POST","admin/vpass",{
-        attempt = admin_password,
-    })
-    return ok,err
+    local ok,err = http_request("GET","admin/verify",nil,admin_password)
+    return ok,err,enum[err]
 end
 
 function delete(username, password) -- delete user account
-    local ok,err = http_request("DELETE","user",{
-        name = username,
-        attempt = password,
-    })
-    return ok,err
+    local ok,err = http_request("DELETE","user/"..username,nil,password)
+    return ok,err,enum[err]
 end
 
 function admin.delete(username, admin_password) -- admin delete user account
-    local ok,err = http_request("DELETE","admin/user",{
-        name = username,
-        attempt = admin_password,
-    })
-    return ok,err
+    local ok,err = http_request("DELETE","admin/user/"..username,nil,admin_password)
+    return ok,err,enum[err]
 end
 
 function ping()
-	local ok,err = bal("React")
-	return ok
+    local ok,err = http_request("GET","ping")
+    return ok
 end
 
 -- Simple API
 simple = {
 	online = ping,
     register = function(username, password)
-		local ok,err = user(username, password)
-		return err
+		local ok,err,output = user(username, password)
+		return err,output
 	end,
     balance = function(username)
-		local ok,err = bal(username)
-		return err
+		local ok,err,output = bal(username)
+		return err,output
 	end,
     verify = function(username, password)
-		local ok,err = vpass(username, password)
-		return err
+		local ok,err,output = vpass(username, password)
+		return err,output
 	end,
     send = function(fromUsername, fromPassword, toUsername, amount)
-        local ok,err = sendfunds(fromUsername, toUsername, amount, fromPassword)
-        return err
+        local ok,err,output = sendfunds(fromUsername, toUsername, amount, fromPassword)
+        return err,output
     end,
 	transactions = function(username, password)
-		local ok,err = log(username, password)
-		return err
+		local ok,err,output = log(username, password)
+		return err,output
 	end,
 }
