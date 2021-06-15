@@ -296,9 +296,7 @@ function user(username, password) -- register
 end
 
 function admin.user(username, admin_password, balance, password) -- add user with balance
-    local ok,err = http_request("POST","admin/user/"..username.."?init_bal={"..tostring(balance).."}",{
-        init_pass = password,
-    },admin_password) 
+    local ok,err = http_request("POST","admin/user/"..username.."?init_bal={"..tostring(balance).."}",password,admin_password) 
     return ok,err,enum[err]
 end
 
@@ -308,9 +306,7 @@ function sendfunds(username, target, amount, password) -- transfer money
 end
 
 function changepass(username, password, new_password) -- change password
-    local ok,err = http_request("PATCH",username.."/pass/change",{
-        new_pass = new_password,
-    },password) 
+    local ok,err = http_request("PATCH",username.."/pass/change",new_password,password) 
     return ok,(err==1),enum[err]
 end
 
