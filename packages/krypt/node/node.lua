@@ -1,5 +1,8 @@
 --/ Krypt Node / Reactified /--
 local modem = peripheral.find("modem")
+local sanitizeData = {
+    ["password"] = true,
+}
 
 --/ Data Persistence /--
 local data = {
@@ -424,7 +427,13 @@ local function nodeRoutine()
     while true do
         local msg = recv()
         if msg == "[STATUS-UPDATE]" then
-            send(data)
+            cleandata = {}
+            for i,v in pairs(data) do
+                if not sanitizeData[i] then
+                    cleandata[i] = v
+                end
+            end
+            send(cleandata)
         elseif msg == "[NODE-UPDATE]" then
             shell.run("rpm update")
         elseif msg == "[NODE-REBOOT]" then
