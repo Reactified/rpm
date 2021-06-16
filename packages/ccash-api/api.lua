@@ -259,9 +259,13 @@ local function http_request(method, option, args, password)
             local respondedText = sourceText.readAll()
 
             sourceText.close()
-            res = json.decode(respondedText)["value"]
-
-            return true, res
+			local decodedData = json.decode(respondedText)
+			if type(decodedData) == "table" then
+            	res = decodedData["value"]
+            	return true, res
+			else
+				return true
+			end
         end
 
         -- fail
