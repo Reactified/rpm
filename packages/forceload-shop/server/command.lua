@@ -16,6 +16,11 @@ else
     saveData()
 end
 
+-- Epoch Time
+local function epochTime()
+    return os.epoch("utc")/1000
+end
+
 -- Chunk ID Function
 local function getID(chunkX,chunkY)
     return tostring(chunkX)..","..tostring(chunkY)
@@ -29,7 +34,7 @@ end
 -- Command Functions
 local function loadChunk(chunkX,chunkY)
     local chunkID = getID(chunkX,chunkY)
-    forceloaded[chunkID] = 0
+    forceloaded[chunkID] = epochTime()
     exec("forceload add "..tostring(chunkX*16).." "..tostring(chunkY*16))
     saveData()
     return true
@@ -46,11 +51,11 @@ end
 local function addChunkDays(chunkX,chunkY,days)
     local chunkID = getID(chunkX,chunkY)
     if forceloaded[chunkID] then
-        forceloaded[chunkID] = forceloaded[chunkID] + days
+        forceloaded[chunkID] = forceloaded[chunkID] + (days*86400)
         saveData()
     else
         loadChunk(chunkX,chunkY)
-        forceloaded[chunkID] = days
+        forceloaded[chunkID] = epochTime() + (days*86400)
         saveData()
     end
 end
@@ -79,21 +84,21 @@ end
 
 local function chunkTimer()
     while true do
-        local day = os.epoch("utc")/86400000
-        local dayPercent = 1-(day-math.floor(day))
-        sleep(dayPercent*86400)
-
-        -- this code will run once a day at UTC midnight
-        print("CHUNK TIMER")
+        sleep(300)
+        
+        local chunkUnloaded = false
         for chunkID,daysLeft in pairs(forceloaded) do
-            forceloaded[chunkID] = daysLeft - 1
-            if forceloaded[chunkID] <= 0 then
+            if forceloaded[chunkID] <= epochTime() then
                 local chunkX,chunkY = splitID(chunkID)
                 print("EXPIRED: ",chunkX,chunkY)
                 unloadChunk(chunkX,chunkY)
+                chunkUnloaded = true
             end
         end
-        saveData()
+
+        if chunkUnloaded then -- only save if we actually unloaded a chunk
+            saveData()
+        end
     end
 end
 
