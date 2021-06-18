@@ -50,7 +50,11 @@ local function http_request(method, option, args, password)
 
             sourceText.close()
 			
-			return true, respondedText
+			if tonumber(respondedText) then
+				return true, tonumber(respondedText)
+			else
+				return true, respondedText
+			end
         end
 
         -- fail
