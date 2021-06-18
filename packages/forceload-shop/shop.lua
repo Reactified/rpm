@@ -34,7 +34,15 @@ function shop()
 		data.shopVaultName = read()
 		print("enter daily chunk cost")
 		data.dailyChunkCost = tonumber(read())
-		ccash.user(data.shopAccountName,data.shopAccountPass)
+		local ok,err = ccash.user(data.shopAccountName,data.shopAccountPass)
+		if ok and type(err) == "number" and err > 0 then
+			print("success!")
+			sleep(1)
+		else
+			printError("error: "..tostring(err))
+			sleep(8)
+			os.pullEvent("key")
+		end
 		saveData()
 	end
 
@@ -115,7 +123,12 @@ function shop()
 	local displayedChunks = {}
 
 	local function getMapData(x,y)
-		return loadedChunks[getID(x,y)] or 0
+		local timeLeft = loadedChunks[getID(x,y)]
+		if not timeLeft then
+			return 0
+		end
+		timeLeft = timeLeft - os.epoch("utc")/1000
+		return (timeLeft/86400)
 	end
 
 	local function setMapColor(mapValue,x,y)
@@ -123,7 +136,7 @@ function shop()
 			term.setBackgroundColor(colors.blue)
 		elseif mapValue >= 2 then
 			term.setBackgroundColor(colors.cyan)
-		elseif mapValue >= 1 then
+		elseif mapValue > 0 then
 			term.setBackgroundColor(colors.lightBlue)
 		else
 			local xor = 0
@@ -200,8 +213,10 @@ function shop()
 						write("Forceloaded")
 					end
 					term.setCursorPos(w-17,8)
-					if chunkDays > 0 then
+					if chunkDays >= 1 then
 						write(tostring(math.floor(chunkDays)).." days left")
+                    elseif chunkDays > 0 then
+                        write(tostring(math.floor(chunkDays*24)).." hours left")
 					end
 					term.setCursorPos(w-17,10)
 					term.setBackgroundColor(colors.blue)
@@ -244,13 +259,20 @@ function shop()
 							while true do
 								local ok,bal = ccash.bal(data.shopAccountName)
 								if not ok then
+									printError("CCASH OFFLINE")
+									sleep(3)
+									break
+								elseif type(bal) ~= "number" then
+									printError("BALANCE ERR")
+									print(bal)
+									sleep(3)
 									break
 								end
 								if bal >= data.dailyChunkCost then
-									local newDays = math.floor(bal/data.dailyChunkCost)
+									local newDays = bal/data.dailyChunkCost
 									ccash.simple.send(data.shopAccountName,data.shopAccountPass,data.shopVaultName,bal)
 									addChunkDays(chunkX,chunkY,newDays)
-									write("Added "..tostring(newDays).." days")
+									write("Added "..tostring(math.floor(newDays)).." days")
 									sleep(1)
 									break
 								end
