@@ -19,7 +19,7 @@ local bank = "https://twix.aosync.me/BankF/" -- set your bank url here
 -- Automatic Updates
 if fs.exists("rpm.lua") then
 	os.loadAPI("rpm.lua")
-	rpm.api.update()
+	rpm.api.update("ccash-api")
 end
 
 -- Integrated JSON API
