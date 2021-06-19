@@ -25,7 +25,7 @@ local function http_request(method, option, args, password)
 	end
 
 	http.request({
-		url = textutils.urlEncode(bank .. option), 
+		url = bank .. textutils.urlEncode(option), 
 		method = method, 
 		body = body,
 		headers = {
