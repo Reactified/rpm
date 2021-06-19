@@ -162,7 +162,11 @@ api = {
             end
 
             -- update RPM
-            local f = fs.open(shell.getRunningProgram(),"r")
+            local runningProgram = "rpm.lua"
+            if shell then
+                runningProgram = shell.getRunningProgram()
+            end
+            local f = fs.open(runningProgram,"r")
             local ndata = getFile("rpm.lua")
             if f and ndata then
                 local fdata = f.readAll()
@@ -171,7 +175,7 @@ api = {
                     log("rpm update available!")
                     log("updating rpm...")
                     sleep(3)
-                    f = fs.open(shell.getRunningProgram(),"w")
+                    f = fs.open(runningProgram,"w")
                     f.writeLine(ndata)
                     f.close()
                 else
