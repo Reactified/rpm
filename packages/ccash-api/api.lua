@@ -16,6 +16,12 @@ local bank = "https://twix.aosync.me/BankF/" -- set your bank url here
 
 ]]
 
+-- Automatic Updates
+if fs.exists("rpm.lua") then
+	os.loadAPI("rpm.lua")
+	rpm.api.update()
+end
+
 -- HTTP Functions
 local function http_request(method, option, args, password)
 	local res, body
