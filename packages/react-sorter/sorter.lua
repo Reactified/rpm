@@ -121,7 +121,7 @@ local function placeInChest(fromChestID,fromSlot,chestID,count)
     if fullChests[chestID] then
         return 0
     end
-    local movedItems = moveItem(fromChestID,fromSlotperipheral,chestID,nil,count)
+    local movedItems = moveItem(fromChestID,fromSlot,chestID,nil,count)
     if movedItems <= 0 then
         fullChests[chestID] = true
     end
