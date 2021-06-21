@@ -41,7 +41,7 @@ function recv(timeout)
     while true do
         local e,s,c,r,m = os.pullEvent()
         if e == "modem_message" and c == data.chan/76 and type(m) == "table" and m.krypt then
-            if r == filter or not filter and (m.target == os.getComputerID() or m.target == true) and m.integrity == data.chan*#textutils.serialise(m.data) then
+            if (r == filter or not filter) and (m.target == os.getComputerID() or m.target == true) and m.integrity == data.chan*#textutils.serialise(m.data) then
                 return m.data
             end
         elseif e == "timer" then
