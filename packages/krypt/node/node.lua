@@ -436,6 +436,7 @@ local function nodeRoutine()
             send(cleandata)
         elseif msg == "[NODE-UPDATE]" then
             shell.run("rpm update")
+            os.reboot()
         elseif msg == "[NODE-REBOOT]" then
             sleep(8)
             os.reboot()
