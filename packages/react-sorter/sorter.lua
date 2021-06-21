@@ -60,22 +60,34 @@ end
 
 local function updateContents(networkID)
     chests[networkID].contents = chests[networkID].list()
+    local chestEmptySlots = chests[networkID].capacity or 0
+    for i,v in pairs(chests[networkID].contents) do
+        chestEmptySlots = chestEmptySlots - 1
+    end
+    if chestEmptySlots > 0 then
+        fullChests[networkID] = false
+    end
 end
 
 local function indexAllChests(recheckCapacity)
     local peripheralList = peripheral.getNames()
+    local idCounter = 0
+
     for peripheralListIndex, peripheralName in pairs(peripheralList) do
         local networkID = -1
         local shortName = peripheralName
         
         while true do
-            local underscorePosition = string.find(shortName,"_")
-            if underscorePosition then
-                networkID = tonumber(string.sub(shortName,underscorePosition+1,#peripheralName))
-                shortName = string.sub(peripheralName,1,underscorePosition-1)
-            else
-                break
+            local underscorePosition
+            if string.find(shortName,"_") then
+                underscorePosition = #shortName+1-string.find(string.reverse(shortName),"_")
             end
+            if underscorePosition then
+                networkID = idCounter --tonumber(string.sub(shortName,underscorePosition+1,#peripheralName))
+                idCounter = idCounter + 1
+                shortName = string.sub(peripheralName,1,underscorePosition-1)
+            end
+            break
         end
         if config.core.storageTypes[shortName] then
             local oldCapacity
@@ -91,9 +103,7 @@ local function indexAllChests(recheckCapacity)
             end
             updateContents(networkID)
         end
-        write(".")
     end
-    print()
 end
 
 local function getChestType(id)
@@ -111,7 +121,7 @@ local function placeInChest(fromChestID,fromSlot,chestID,count)
     if fullChests[chestID] then
         return 0
     end
-    local movedItems = moveItem(fromChestID,fromSlot,chestID,nil,count)
+    local movedItems = moveItem(fromChestID,fromSlotperipheral,chestID,nil,count)
     if movedItems <= 0 then
         fullChests[chestID] = true
     end
@@ -366,6 +376,7 @@ local function storageRoutine()
         -- Wait
         cycle = cycle + 1
         stopTimer("FULL LOOP")
+        sleep(5)
     end
 end
 
