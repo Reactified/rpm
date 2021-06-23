@@ -350,8 +350,8 @@ if shell then
             print("rpm install <package>")
             print("rpm uninstall <package>")
             print("rpm update [package]")
+            print("rpm repos [update]")
             print("rpm list")
-            print("rpm repos")
         end,
         install = function(package)
             api.install(package)
