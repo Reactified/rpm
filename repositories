@@ -1,6 +1,6 @@
 {
 	-- Official Repository
-    {
+	{
 		"RPM Official",
 		"https://raw.githubusercontent.com/Reactified/rpm/main/",
 	},
