@@ -1,5 +1,5 @@
 # RPM
-**RPM** is a package manager for my computercraft programs.<br>
+**RPM** is a package manager for computercraft programs.<br>
 <br>
 It allows you to do complex tasks with only one command, such as installing a program with many different files.<br>
 You can also update all of your packages at once with ``rpm update``<br>
