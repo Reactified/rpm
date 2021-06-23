@@ -83,9 +83,14 @@ local function indexAllChests(recheckCapacity)
                 underscorePosition = #shortName+1-string.find(string.reverse(shortName),"_")
             end
             if underscorePosition then
-                networkID = idCounter --tonumber(string.sub(shortName,underscorePosition+1,#peripheralName))
+                networkID = tonumber(string.sub(shortName,underscorePosition+1,#peripheralName))
+                
                 idCounter = idCounter + 1
                 shortName = string.sub(peripheralName,1,underscorePosition-1)
+                
+                if type(config.core.storageTypes[shortName]) == "number" then
+					networkID = networkID + tonumber(config.core.storageTypes[shortName])
+                end
             end
             break
         end
