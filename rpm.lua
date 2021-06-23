@@ -72,6 +72,9 @@ local function updateRepos()
         end
     end
 end
+if not data.repos then
+    updateRepos()
+end
 local function parseManifest(manifest)
     local files = {}
     while true do
