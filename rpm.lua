@@ -38,6 +38,9 @@ local function hash(str)
     return int
 end
 local function findRepo(repoName)
+    if type(data.repos) ~= "table" then
+        return officialUrl,1
+    end
     for i,v in pairs(data.repos) do
         if v[1] == repoName then
             return v[2],i
