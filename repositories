@@ -4,4 +4,9 @@
 		"RPM Official",
 		"https://raw.githubusercontent.com/Reactified/rpm/main/",
 	},
+	
+	{
+	    "Blink Repo",
+		"https://raw.githubusercontent.com/LukeeeeBennett/cc/main/",
+	},
 }
