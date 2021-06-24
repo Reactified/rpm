@@ -4,4 +4,10 @@
 		"RPM Official",
 		"https://raw.githubusercontent.com/Reactified/rpm/main/",
 	},
+
+	-- blinkblinko Repository
+	{
+		"blinkblinko",
+		"https://raw.githubusercontent.com/LukeeeeBennett/cc/main/",
+	},
 }
