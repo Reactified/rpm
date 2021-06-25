@@ -233,11 +233,7 @@ end
 -- HTTP Functions
 local function http_request(method, option, args, password)
 	local res, body
-
-	if method ~= "GET" and args then
-		body = json.encode(args)
-	end
-
+	
 	http.request({
 		url = bank .. option, 
 		method = method, 
