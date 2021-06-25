@@ -231,8 +231,8 @@ end
 -- END JSON API
 
 -- HTTP Functions
-local function http_request(method, option, args, password)
-	local res, body
+local function http_request(method, option, body, password)
+	local res
 	
 	http.request({
 		url = bank .. option, 
