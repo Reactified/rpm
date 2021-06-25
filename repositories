@@ -5,8 +5,13 @@
 		"https://raw.githubusercontent.com/Reactified/rpm/main/",
 	},
 	
+	-- Unofficial Repositories
 	{
-	    "Blink Repo",
+		"Rex Packages",
+		"https://raw.githubusercontent.com/R3-Rex/rpm-rex/main/",
+	},
+	{
+		"Blink Repo",
 		"https://raw.githubusercontent.com/LukeeeeBennett/cc/main/",
 	},
 }
