@@ -22,11 +22,12 @@ end
 
 -- Timing Functions
 local timers = {}
+local times = {}
 local function startTimer(str)
     timers[str] = os.epoch("utc")
 end
 local function stopTimer(str)
-    print(str..": "..tostring(os.epoch("utc")-timers[str]).."ms")
+    times[string.lower(str)] = os.epoch("utc")-timers[str]
 end
 
 -- Storage Functions
@@ -158,8 +159,6 @@ local function depositItem(chestID,slotID)
                 end
             end
         end
-
-        print("MISC CHESTS FULL")
     end
 end
 
@@ -211,7 +210,6 @@ local function getDisplayName(id)
             return displayName
         end
     else
-        printError("Could not get ",id)
         return false
     end
 end
@@ -231,9 +229,6 @@ local function storageRoutine()
     local resourceChests = {}
     local cycle = 0
     while true do
-        -- Loop code
-        startTimer("FULL LOOP")
-
         -- Index all chests
         startTimer("INDEXING CHESTS")
         indexAllChests(cycle % config.performance.cyclesPerCapacityCheck == 0)
@@ -380,7 +375,6 @@ local function storageRoutine()
 
         -- Wait
         cycle = cycle + 1
-        stopTimer("FULL LOOP")
         sleep(5)
     end
 end
@@ -463,9 +457,133 @@ local function networkRoutine()
     end
 end
 
+-- User Interface
+local function interfaceRoutine()
+    -- Interface Functions
+    local function displayBreakdown(bdata,bcolors,y)
+        -- calculate
+        local width = term.getSize()
+        width = width - 2
+        local btotal = 0
+        for i,v in pairs(bdata) do
+            btotal = btotal + v
+        end
+
+        -- draw bar
+        local bcount = 0
+        term.setCursorPos(2,y)
+        for i,v in pairs(bdata) do
+            bcount = bcount + 1
+            if bcolors[i] then
+                term.setBackgroundColor(bcolors[i])
+            else
+                if bcount%2 == 0 then
+                    term.setBackgroundColor(colors.white)
+                else
+                    term.setBackgroundColor(colors.lightGray)
+                end
+            end
+            write(string.rep(" ",math.floor(width*(v/btotal))))
+        end
+
+        -- draw list
+        local bcount = 0
+        term.setBackgroundColor(colors.black)
+        for i,v in pairs(bdata) do
+            bcount = bcount + 1
+            if bcolors[i] then
+                term.setTextColor(bcolors[i])
+            else
+                if bcount%2 == 0 then
+                    term.setTextColor(colors.white)
+                else
+                    term.setTextColor(colors.lightGray)
+                end
+            end
+            term.setCursorPos(2,y+1+bcount)
+            write(tostring(math.floor(v)))
+            term.setTextColor(colors.gray)
+            write(" "..i)
+        end
+    end
+
+    -- Interface
+    local interfaceTabs = {"STORAGE","PERFORMANCE"}
+    local interfaceTab = 1
+    local interfaceTabPositions = {}
+
+    while true do
+        -- Header
+        term.setBackgroundColor(colors.black)
+        term.clear()
+        term.setTextColor(colors.lightGray)
+        local x = 2
+        for i,v in pairs(interfaceTabs) do
+            term.setCursorPos(x,2)
+            if interfaceTab == i then
+                term.setTextColor(colors.white)
+            else
+                term.setTextColor(colors.gray)
+            end
+            write(v)
+            table.insert(interfaceTabPositions,{x,x+#v-1})
+            x = x + #v + 2
+        end
+        -- Tabs
+        local tab = interfaceTabs[interfaceTab]
+        if tab == "STORAGE" then
+            local categories = {
+                ["filled"] = 0,
+                ["available"] = 0,
+                ["unallocated"] = 0,
+            }
+            for i,v in pairs(chests) do
+                if v.type == "misc" and v.contents then
+                    local slotsInUse = -1
+                    for k,z in pairs(v.contents) do
+                        slotsInUse = slotsInUse + 1
+                    end
+                    categories.filled = categories.filled + slotsInUse
+                    categories.available = categories.available + ((v.capacity-1) - slotsInUse)
+                elseif v.type == "empty" then
+                    categories.unallocated = categories.unallocated + v.capacity
+                end
+            end
+            displayBreakdown(categories,{
+                ["filled"] = colors.cyan,
+                ["available"] = colors.lightGray,
+                ["unallocated"] = colors.gray,
+            },4)
+        elseif tab == "PERFORMANCE" then
+            displayBreakdown(times,{
+                ["get display names"] = colors.red,
+                ["misc chest reallocation"] = colors.orange,
+                ["resource balancing"] = colors.yellow,
+                ["indexing chests"] = colors.lime,
+                ["chest classification"] = colors.cyan,
+                ["drop chest clearing"] = colors.blue,
+                ["resource chest reallocation"] = colors.purple,
+            },4)
+        end
+        -- Input
+        local e,k = os.pullEvent("key")
+        if k == keys.right then
+            interfaceTab = interfaceTab + 1
+            if interfaceTab > #interfaceTabs then
+                interfaceTab = 1
+            end
+        elseif k == keys.left then
+            interfaceTab = interfaceTab - 1
+            if interfaceTab < 1 then
+                interfaceTab = #interfaceTabs
+            end
+        end
+    end
+end
+
 -- Run
 while true do
-    parallel.waitForAll(networkRoutine,storageRoutine)
+    parallel.waitForAll(networkRoutine,storageRoutine,interfaceRoutine)
     printError("Crashed | Restarting in 5 seconds...")
     sleep(5)
 end
