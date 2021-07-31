@@ -1,1 +1,2 @@
 backend.lua > startup.lua
+config.lua > bank_config.lua
