@@ -1,8 +1,9 @@
 -- CCash Exchange Backend
-local reserveAccount = "Reserve"
-local reservePassword = "RESERVE_PASSWORD_HERE"
-local reserveMaximum = 100000
-local commodity = "minecraft:coal"
+local configFile = dofile("/bank_config.lua")
+local reserveAccount = configFile.reserveAccount
+local reservePassword = configFile.reservePassword
+local reserveMaximum = configFile.reserveMaximum
+local commodity = configFile.commodity
 
 -- Backend Routine
 os.pullEvent = os.pullEventRaw
