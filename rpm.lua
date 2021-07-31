@@ -266,6 +266,7 @@ api = {
                 dependencies = parseDependencies(dependencies)
                 for id,dependency in pairs(dependencies) do
                     if not data.packages[dependency] then
+                        log("new dependency: "..dependency)
                         installPackage(dependency)
                     end
                 end
