@@ -6,6 +6,7 @@ local officialRepo = "RPM Official"
 local officialUrl = "https://raw.githubusercontent.com/Reactified/rpm/main/"
 
 -- RPM Data
+local firstRun = false
 local data = {
     packages = {},
     repos = {
@@ -23,6 +24,7 @@ local function saveData()
 end
 if not fs.exists("/.rpm") then
     saveData()
+    firstRun = true
 else
     local f = fs.open("/.rpm","r")
     data = textutils.unserialise(f.readAll())
@@ -332,6 +334,11 @@ api = {
         return plist
     end,
 }
+
+-- First Run
+if firstRun then
+    updateRepos()
+end
 
 -- RPM Interface
 if shell then
