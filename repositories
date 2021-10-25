@@ -8,6 +8,11 @@
 	
 	-- Unofficial Repositories
 	{
+		"Manifold",
+		"https://raw.githubusercontent.com/alexr314/computercraft/main/",
+		true,
+	},
+	{
 		"Rex Packages",
 		"https://raw.githubusercontent.com/R3-Rex/rpm-rex/main/",
 	},
