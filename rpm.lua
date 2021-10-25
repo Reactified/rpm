@@ -12,6 +12,7 @@ local data = {
         {
             officialRepo,
             officialUrl,
+            true,
         }
     }
 }
@@ -39,11 +40,11 @@ local function hash(str)
 end
 local function findRepo(repoName)
     if type(data.repos) ~= "table" then
-        return officialUrl,1
+        return officialUrl,1,true
     end
     for i,v in pairs(data.repos) do
         if v[1] == repoName then
-            return v[2],i
+            return v[2],i,v[3]
         end
     end
     return false
@@ -128,7 +129,7 @@ local function installPackage(package,isDependency)
         manifest = getFile("packages/"..package.."/manifest",v[1])
         if manifest then
             repo = v[1]
-            official = (repo == officialRepo)
+            official = (repo == officialRepo) or v[3]
             break
         end
     end
