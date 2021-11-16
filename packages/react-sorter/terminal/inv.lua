@@ -131,6 +131,7 @@ local function uiRoutine()
             term.setTextColor(colors.red)
             term.setBackgroundColor(colors.black)
             center("Storage array offline",h/2)
+            os.startTimer(0.5)
         end
         
         local e = {os.pullEvent()}
