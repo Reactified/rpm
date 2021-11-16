@@ -57,7 +57,14 @@ local function uiRoutine()
     local scrollDist = 0
     local selectedItem = false
     
+    local timersToCancel = {}
+    
     while true do
+        -- init
+        for i,v in pairs(timersToCancel) do
+            os.cancelTimer(v)
+        end
+        timersToCancel = {}
         local w,h = term.getSize()
         
         -- list
@@ -131,7 +138,7 @@ local function uiRoutine()
             term.setTextColor(colors.red)
             term.setBackgroundColor(colors.black)
             center("Storage array offline",h/2)
-            os.startTimer(0.5)
+            table.insert(timersToCancel,os.startTimer(0.5))
         end
         
         local e = {os.pullEvent()}
