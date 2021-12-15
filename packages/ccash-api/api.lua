@@ -1,5 +1,10 @@
 -- Reactified's CCash API
-local bank = "https://twix.aosync.me/" -- set your bank url here
+local bank = "https://twix.aosync.me/"
+if fs.exists("/config/bank.cfg") then
+	local f = fs.open("/config/bank.cfg","r")
+	bank = f.readLine()
+	f.close()
+end
 
 --[[
 
