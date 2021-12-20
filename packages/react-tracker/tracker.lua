@@ -271,6 +271,12 @@ local menus = {
         width = 10,
         {"FILE","FILE"},
         {"SETTINGS","SETTINGS"},
+        {"QUIT",function()
+            t.bg(colors.black)
+            t.clr()
+            t.cur(1,1)
+            error("Exited program")
+        end,}
     },
     ["FILE"] = {
         width = 6,
@@ -562,6 +568,21 @@ local controls = {
         "SHIFT",
         "Row selection",
     },
+    [keys.delete] = {
+        function()
+            tracks[trk][row] = 1
+            table.remove(tracks[trk],row)
+        end,
+        "DEL",
+        "Delete row",
+    },
+    [keys.insert] = {
+        function()
+            table.insert(tracks[trk],row,false)
+        end,
+        "DEL",
+        "Delete row",
+    },
 }
 function showControls()
     local w,h = term.getSize()
@@ -583,7 +604,7 @@ function showControls()
         y = y + 1
         if y >= h-1 then
             y = 4
-            x =x + 30
+            x =x + 23
         end
     end
     os.pullEvent("key")
