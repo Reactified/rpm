@@ -367,6 +367,10 @@ while true do
             elseif sgState ~= "Idle" then
                 if key == keys.backspace then
                     stargate.disconnect()
+                    if irisState ~= "Open" then
+                        sleep(2)
+                        stargate.openIris()
+                    end
                 elseif key == keys.backslash and direction == "in" then
                     local adr = remoteAdr
                     stargate.disconnect()
