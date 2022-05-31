@@ -52,6 +52,7 @@ local function scfg(name) -- set color foreground
     term.setTextColor(colors[data.theme[name]])
 end
 local function center(str,ln,skip)
+    str = str or "<- Placeholder ->"
     local w,h = term.getSize()
     term.setCursorPos((w/2)-(#str/2)+1,ln)
     if skip then return end
@@ -139,6 +140,8 @@ local function updateMonitors()
             scfg("accent")
             center(chevronText,2,true)
             write(string.sub(chevronText,1,charVal))
+            scfg("bright")
+            center(connectionName or "Unknown",3)
             scfg("text")
             if direction == "in" then
                 center(switch(w>25,">> INBOUND CONNECTION <<",">> INBOUND <<"),h-1)
@@ -148,16 +151,22 @@ local function updateMonitors()
         elseif sgState == "Opening" then
             scfg("accent")
             center(remoteAdr,2)
+            scfg("bright")
+            center(connectionName or "Unknown",3)
             scfg("warn")
             center("!! STAND CLEAR !!",h-1)
         elseif sgState == "Connected" then
             scfg("accent")
             center(remoteAdr,2)
+            scfg("bright")
+            center(switch(direction=="in","< ","> ")..(connectionName or "Unknown")..switch(direction=="in"," >"," <"),3)
             scfg("dark")
             center("STARGATE ACTIVE",h-1)
         elseif sgState == "Closing" then
             scfg("text")
             center(remoteAdr,2)
+            scfg("bright")
+            center(connectionName or "Unknown",3)
             scfg("warn")
             center(switch(w>25,"[ TERMINATING CONNECTION ]","[ TERMINATING ]"),h-1)
         end
@@ -166,13 +175,17 @@ local function updateMonitors()
 end
 
 -- Update Screen
-local controls = {}
-local menuOptions = {
+local mainMenu = {
     "Dial Stargate",
     "Address Book ",
     "Manage Gates ",
     "Settings     ",
 }
+local menuOptions = mainMenu
+local menuOption = ""
+local menuType = "main"
+
+local controls = {}
 local menuSelect = 1
 local dialAdr = ""
 local dialSelected = true
@@ -189,7 +202,7 @@ local function updateScreen()
         scfg("dark")
         center(localAdr,3)
 
-        local menuOption = menuOptions[menuSelect]
+        menuOption = menuOptions[menuSelect]
         scfg("text")
         center(menuOption,h/2)
         local aboveOption = menuOptions[menuSelect-1] or menuOptions[#menuOptions]
@@ -230,8 +243,32 @@ local function updateScreen()
                 dialStr = dialStr .. "]"
             end
             center(dialStr,h/2+1)
-        else
+        elseif menuType == "main" then
             center(">>>          ",h/2+1)
+        elseif menuType == "addressbook" then
+            local gateAdr = "Main Menu"
+            for i,v in pairs(data.gates) do
+                if v.name == menuOption then
+                    gateAdr = i
+                end
+            end
+            center(gateAdr,h/2+1)
+            table.insert(controls,switch((gateAdr=="Main Menu"),"-> Return","-> Dial Gate"))
+        end
+    elseif sgState ~= "Idle" then
+        scfg("dark")
+        center(data.panelName,2)
+        scfg("text")
+        center(localAdr..switch(direction=="in"," <<< "," >>> ")..(remoteAdr or "???"),4)
+        scfg("accent")
+        center(connectionName or "[ Unknown Gate ]",5)
+
+        table.insert(controls,"<- Terminate")
+        if direction == "in" then
+            table.insert(controls,"\\ Reverse")
+        end
+        if not connectionName then
+            table.insert(controls,"/ Chart Gate")
         end
     end
 
@@ -240,13 +277,33 @@ local function updateScreen()
     for i,v in pairs(controls) do
         ctrlLen = ctrlLen + #v + 3
     end
-    term.setCursorPos((w/2)-(ctrlLen/2)+1,h-1)
+    term.setCursorPos((w/2)-(ctrlLen/2)+1.5,h-1)
     for i,v in pairs(controls) do
         scbg("dark")
         scfg("background")
         write(" "..v.." ")
         scbg("background")
         write(" ")
+    end
+end
+
+-- High Level
+local function dialStargate(adr)
+    success,error = stargate.dial(adr)
+    if success then
+        connectionName = gateName(remoteAdr)
+        sgState = "Dialling"
+        heartbeat = fastHb
+        remoteAdr = adr
+        direction = "out"
+        dialAdr = ""
+        return true
+    else
+        scfg("warn")
+        local w,h = term.getSize()
+        center(error,h-3)
+        sleep(0.7)
+        return false,error
     end
 end
 
@@ -304,19 +361,34 @@ while true do
                 elseif key == keys.enter then
                     local adr = formatAdr(dialAdr)
                     if adr then
-                        success,error = stargate.dial(adr)
-                        if success then
-                            connectionName = gateName(remoteAdr)
-                            sgState = "Dialling"
-                            heartbeat = fastHb
-                            remoteAdr = adr
-                            direction = "out"
-                            dialAdr = ""
-                        end
+                        dialStargate(adr)
                     end
                 end
-            elseif sgState ~= "Idle" and key == keys.backspace then
-                stargate.disconnect()
+            elseif sgState ~= "Idle" then
+                if key == keys.backspace then
+                    stargate.disconnect()
+                elseif key == keys.backslash and direction == "in" then
+                    local adr = remoteAdr
+                    stargate.disconnect()
+                    sleep(2.5)
+                    stargate.dial(remoteAdr)
+                elseif key == keys.slash then
+                    local w,h = term.getSize()
+                    scfg("accent")
+                    center("Chart Stargate",h/2-1)
+                    scfg("dark")
+                    center("Enter Name:   ",h/2)
+                    scfg("bright")
+                    sleep()
+                    center("              ",h/2+1,true)
+                    write("> ")
+                    local name = read()
+                    connectionName = name
+                    data.gates[remoteAdr] = {
+                        name = name,
+                    }
+                    saveData()
+                end
             end
 
             if sgState == "Idle" then
@@ -330,6 +402,32 @@ while true do
                     menuSelect = menuSelect - 1
                     if menuSelect < 1 then
                         menuSelect = #menuOptions
+                    end
+                end
+                -- Menu Items
+                if key == keys.enter then
+                    if menuType == "main" then
+                        if menuOption == "Address Book " then
+                            local addresses = {"<- Back"}
+                            for i,v in pairs(data.gates) do
+                                table.insert(addresses,v.name)
+                            end
+                            menuOptions = addresses
+                            menuType = "addressbook"
+                        end
+                    elseif menuType == "addressbook" then
+                        local gateAdr = false
+                        for i,v in pairs(data.gates) do
+                            if v.name == menuOption then
+                                gateAdr = i
+                            end
+                        end
+                        if gateAdr then
+                            dialStargate(gateAdr)
+                        else
+                            menuOptions = mainMenu
+                            menuType = "main"
+                        end
                     end
                 end
             end
