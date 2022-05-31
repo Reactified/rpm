@@ -388,6 +388,10 @@ while true do
                         name = name,
                     }
                     saveData()
+                elseif key == keys.minus then
+                    stargate.closeIris()
+                elseif key == keys.equals then
+                    stargate.openIris()
                 end
             end
 
