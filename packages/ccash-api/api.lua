@@ -1,5 +1,5 @@
 -- Reactified's CCash API
-local bank = "https://twix.aosync.me/"
+local bank = "https://api.ccashmc.com/"
 if fs.exists("/config/bank.cfg") then
 	local f = fs.open("/config/bank.cfg","r")
 	bank = f.readLine()
