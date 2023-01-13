@@ -424,6 +424,14 @@ local function execute(interf)
     saveData()
 end
 local function nodeRoutine()
+    -- set all toggle controls to saved states
+    for i,v in pairs(data.io) do
+        if v.type == "Toggle Control" then
+            execute(i)
+        end
+    end
+
+    -- start primary loop
     while true do
         local msg = recv()
         if msg == "[STATUS-UPDATE]" then
