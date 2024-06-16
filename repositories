@@ -15,6 +15,7 @@
 	{
 		"Rex Packages",
 		"https://raw.githubusercontent.com/R3-Rex/rpm-rex/main/",
+		true,
 	},
 	{
 		"Blink Repo",
