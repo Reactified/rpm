@@ -86,14 +86,16 @@ local function parseManifest(manifest)
     while true do
         local pos = string.find(manifest,"\n")
         local line = manifest
-        if pos then
-            line = string.sub(manifest,1,pos-1)
-            manifest = string.sub(manifest,pos+1,#manifest)
-        end
-        line = string.gsub(line," ","")
-        local pos2 = string.find(line,">")
-        files[#files+1] = {string.sub(line,1,pos2-1),string.sub(line,pos2+1,#line)}
-        if not pos then break end
+        if #line > 0 then
+            if pos then
+                line = string.sub(manifest,1,pos-1)
+                manifest = string.sub(manifest,pos+1,#manifest)
+            end
+            line = string.gsub(line," ","")
+            local pos2 = string.find(line,">")
+            files[#files+1] = {string.sub(line,1,pos2-1),string.sub(line,pos2+1,#line)}
+            if not pos then break end
+        else break end
     end
     return files
 end
