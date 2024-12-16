@@ -31,7 +31,7 @@ function log(x,init)
         term.clear()
     end
     if term.isColor() then
-        term.setBackgroundColor(colors.green)
+        term.setBackgroundColor(colors.orange)
     else
         term.setBackgroundColor(colors.lightGray)
     end
@@ -46,7 +46,7 @@ function log(x,init)
     term.write("MAINFRAME LOG")
     term.setBackgroundColor(colors.gray)
     if term.isColor() then
-        term.setTextColor(colors.green)
+        term.setTextColor(colors.orange)
     else
         term.setTextColor(colors.lightGray)
     end
@@ -107,7 +107,7 @@ function primaryRoutine()
             if msg then
                 nodes[i] = msg
                 if nodes[i] then
-                    if nodes[i] then
+                    if nodes[i] and nodes[i].io then
                         for k,z in pairs(nodes[i].io) do
                             if z.type == "Basic Sensor" or z.type == "Percentage Bar" then
                                 updateIO(i,k,true)
@@ -223,7 +223,7 @@ function userRoutine()
                     local renderY = v[2]+mapY
                     if renderX >= 1-#nodes[i].name and renderY >= 1 and renderX <= w and renderY <= h then
                         if selectedID == i then
-                            m.setBackgroundColor(colors.green)
+                            m.setBackgroundColor(colors.orange)
                             m.setTextColor(darkColor)
                         else
                             m.setBackgroundColor(colors.gray)
@@ -256,7 +256,7 @@ function userRoutine()
                     m.setTextColor(colors.lightGray)
                     m.write("#"..string.rep("0",3-#tostring(i))..tostring(i).." ")
                     if selected and selected.name == v.name then
-                        m.setTextColor(colors.green)
+                        m.setTextColor(colors.orange)
                     elseif v.status then
                         m.setTextColor(colors.white)
                     else
@@ -266,7 +266,7 @@ function userRoutine()
                 end
             end
         else
-            m.setTextColor(colors.green)
+            m.setTextColor(colors.orange)
             m.setCursorPos(2,2)
             m.write("Error")
             m.setCursorPos(2,3)
@@ -280,7 +280,7 @@ function userRoutine()
             m.write(string.rep(" ",1+(w-panelX)))
         end
         -- Draw Panel Header
-        m.setBackgroundColor(colors.green)
+        m.setBackgroundColor(colors.orange)
         m.setCursorPos(panelX,1)
         m.write(string.rep(" ",1+(w-panelX)))
         m.setTextColor(colors.black)
@@ -298,7 +298,7 @@ function userRoutine()
             if data.map[selectedID] then
                 m.setTextColor(colors.white)
             else
-                m.setTextColor(colors.green)
+                m.setTextColor(colors.orange)
             end
             m.write("> ")
             m.setTextColor(colors.white)
@@ -374,22 +374,22 @@ function userRoutine()
                             m.write(i..":")
                             dpos = dpos + 1
                             m.setCursorPos(panelX+1,dpos)
-                            m.setTextColor(colors.green)
+                            m.setTextColor(colors.orange)
                             m.write(sensorText)
                         else
                             m.setCursorPos(panelX+1,dpos)
                             m.setTextColor(colors.lightGray)
                             m.write(i)
                             m.setCursorPos(w-#sensorText,dpos)
-                            m.setTextColor(colors.green)
+                            m.setTextColor(colors.orange)
                             m.write(sensorText)
                         end
                     elseif v.type == "Percentage Bar" then
                         local pPos = string.find(i,"<")
                         local pName = i
-                        local pColor = colors.green
+                        local pColor = colors.orange
                         if pPos then
-                            pColor = colors[string.lower(string.sub(i,pPos+1,#i-1))] or colors.green
+                            pColor = colors[string.lower(string.sub(i,pPos+1,#i-1))] or colors.orange
                             pName = string.sub(i,1,pPos-2)
                         end
                         m.setCursorPos(panelX+1,dpos)
@@ -480,7 +480,7 @@ function userRoutine()
         m.write(string.rep(" ",panelX-1))
         m.setCursorPos(2,h)
         if tab == "Map" then
-            m.setTextColor(colors.green)
+            m.setTextColor(colors.orange)
             m.setBackgroundColor(colors.gray)
         else
             m.setTextColor(colors.lightGray)
@@ -488,7 +488,7 @@ function userRoutine()
         end
         m.write(" Map ")
         if tab == "Nodes" then
-            m.setTextColor(colors.green)
+            m.setTextColor(colors.orange)
             m.setBackgroundColor(colors.gray)
         else
             m.setTextColor(colors.lightGray)
@@ -519,7 +519,7 @@ function userRoutine()
                 if x >= panelX and y == 1 then
                     m.setCursorPos(1,1)
                     m.setBackgroundColor(colors.black)
-                    m.setTextColor(colors.green)
+                    m.setTextColor(colors.orange)
                     m.write("KRYPT REMOTE PAIRING ")
                     remotePairing = true
                     for i=1,30 do
@@ -657,7 +657,7 @@ while true do
     log("! ERROR ! SYSTEM FAILURE")
     for k=30,0,-0.2 do
         for i,v in pairs(drawTargets) do
-            v.setBackgroundColor(colors.green)
+            v.setBackgroundColor(colors.orange)
             v.clear()
             v.setTextColor(colors.black)
             v.setCursorPos(2,2)
@@ -668,7 +668,7 @@ while true do
                 v.setCursorPos(1,dpos)
                 v.clearLine()
                 v.setCursorPos(math.random(1,txw),dpos)
-                v.setTextColor(colors.green)
+                v.setTextColor(colors.orange)
                 v.write(string.char(math.random(1,255)))
             end
             v.setTextColor(colors.white)
