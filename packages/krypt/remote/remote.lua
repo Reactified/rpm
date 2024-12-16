@@ -59,7 +59,7 @@ if init then
     term.setBackgroundColor(colors.black)
     term.clear()
     term.setCursorPos(2,2)
-    term.setTextColor(colors.green)
+    term.setTextColor(colors.orange)
     write("KRYPT ")
     term.setTextColor(colors.lightGray)
     write("REMOTE")
@@ -83,7 +83,7 @@ if init then
     term.setTextColor(colors.gray)
     write("Press any key when ready")
     os.pullEvent("key")
-    term.setTextColor(colors.green)
+    term.setTextColor(colors.orange)
     term.setCursorPos(2,11)
     write("Pairing... ")
     send("[REMOTE-PAIRING]")
@@ -168,7 +168,7 @@ local function userRoutine()
                     local renderY = v[2]+mapY
                     if renderX >= 1-#nodes[i].name and renderY >= 1 and renderX <= w and renderY <= h then
                         if selectedID == i then
-                            m.setBackgroundColor(colors.green)
+                            m.setBackgroundColor(colors.orange)
                             m.setTextColor(darkColor)
                         else
                             m.setBackgroundColor(colors.gray)
@@ -183,7 +183,7 @@ local function userRoutine()
             local dpos = 1
             local drawid = 1
             m.setCursorPos(1,1)
-            m.setTextColor(colors.green)
+            m.setTextColor(colors.orange)
             m.write("KRYPT ")
             m.setTextColor(colors.gray)
             m.write("Network")
@@ -203,7 +203,7 @@ local function userRoutine()
                     m.setTextColor(colors.lightGray)
                     m.write("#"..string.rep("0",3-#tostring(i))..tostring(i).." ")
                     if selected and selected.name == v.name then
-                        m.setTextColor(colors.green)
+                        m.setTextColor(colors.orange)
                     elseif v.status then
                         m.setTextColor(colors.white)
                     else
@@ -213,7 +213,7 @@ local function userRoutine()
                 end
             end
         else
-            m.setTextColor(colors.green)
+            m.setTextColor(colors.orange)
             m.setCursorPos(2,2)
             m.write("Error")
             m.setCursorPos(2,3)
@@ -226,7 +226,7 @@ local function userRoutine()
         m.write(string.rep(" ",panelX-1))
         m.setCursorPos(2,h)
         if tab == "Map" then
-            m.setTextColor(colors.green)
+            m.setTextColor(colors.orange)
             m.setBackgroundColor(colors.gray)
         else
             m.setTextColor(colors.lightGray)
@@ -234,7 +234,7 @@ local function userRoutine()
         end
         m.write(" Map ")
         if tab == "Nodes" then
-            m.setTextColor(colors.green)
+            m.setTextColor(colors.orange)
             m.setBackgroundColor(colors.gray)
         else
             m.setTextColor(colors.lightGray)
@@ -258,7 +258,7 @@ local function userRoutine()
             m.write(string.rep(" ",1+(w-panelX)))
         end
         -- Draw Panel Header
-        m.setBackgroundColor(colors.green)
+        m.setBackgroundColor(colors.orange)
         m.setCursorPos(panelX,1)
         m.write(string.rep(" ",1+(w-panelX)))
         m.setTextColor(colors.black)
@@ -278,7 +278,7 @@ local function userRoutine()
             if data.map[selectedID] then
                 m.setTextColor(colors.white)
             else
-                m.setTextColor(colors.green)
+                m.setTextColor(colors.orange)
             end
             m.write("> ")
             m.setTextColor(colors.white)
@@ -354,22 +354,22 @@ local function userRoutine()
                             m.write(i..":")
                             dpos = dpos + 1
                             m.setCursorPos(panelX+1,dpos)
-                            m.setTextColor(colors.green)
+                            m.setTextColor(colors.orange)
                             m.write(sensorText)
                         else
                             m.setCursorPos(panelX+1,dpos)
                             m.setTextColor(colors.lightGray)
                             m.write(i)
                             m.setCursorPos(w-#sensorText,dpos)
-                            m.setTextColor(colors.green)
+                            m.setTextColor(colors.orange)
                             m.write(sensorText)
                         end
                     elseif v.type == "Percentage Bar" then
                         local pPos = string.find(i,"<")
                         local pName = i
-                        local pColor = colors.green
+                        local pColor = colors.orange
                         if pPos then
-                            pColor = colors[string.lower(string.sub(i,pPos+1,#i-1))] or colors.green
+                            pColor = colors[string.lower(string.sub(i,pPos+1,#i-1))] or colors.orange
                             pName = string.sub(i,1,pPos-2)
                         end
                         m.setCursorPos(panelX+1,dpos)
