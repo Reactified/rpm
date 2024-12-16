@@ -63,7 +63,7 @@ if init then
     term.clear()
     term.setCursorPos(1,1)
     if term.isColor() then
-        term.setBackgroundColor(colors.green)
+        term.setBackgroundColor(colors.orange)
     else
         term.setBackgroundColor(colors.lightGray)
     end
@@ -143,7 +143,7 @@ function listSelect(options,title)
         term.setBackgroundColor(colors.black)
         term.clear()
         if term.isColor() then
-            term.setTextColor(colors.green)
+            term.setTextColor(colors.orange)
         else
             term.setTextColor(colors.gray)
         end
@@ -192,7 +192,7 @@ local function uiRoutine()
                 term.setBackgroundColor(colors.black)
                 term.clear()
                 if term.isColor() then
-                    term.setTextColor(colors.green)
+                    term.setTextColor(colors.orange)
                 else
                     term.setTextColor(colors.gray)
                 end
@@ -210,7 +210,7 @@ local function uiRoutine()
                 term.write("> ")
                 local pass = read("*")
                 term.setCursorPos(2,7)
-                term.setTextColor(colors.green)
+                term.setTextColor(colors.orange)
                 if pass == data.password then
                     data.password = nil
                     saveData()
@@ -236,7 +236,7 @@ local function uiRoutine()
             term.setBackgroundColor(colors.black)
             term.clear()
             if term.isColor() then
-                term.setTextColor(colors.green)
+                term.setTextColor(colors.orange)
             else
                 term.setTextColor(colors.gray)
             end
@@ -261,7 +261,7 @@ local function uiRoutine()
             write("> ")
             local pass2 = read("*")
             term.setCursorPos(2,10)
-            term.setTextColor(colors.green)
+            term.setTextColor(colors.orange)
             if pass1 == pass2 then
                 write("Password set!")
                 data.password = pass1
@@ -294,7 +294,7 @@ local function uiRoutine()
                         term.setBackgroundColor(colors.black)
                         term.clear()
                         if term.isColor() then
-                            term.setTextColor(colors.green)
+                            term.setTextColor(colors.orange)
                         else
                             term.setTextColor(colors.gray)
                         end
@@ -317,7 +317,7 @@ local function uiRoutine()
                         term.setBackgroundColor(colors.black)
                         term.clear()
                         if term.isColor() then
-                            term.setTextColor(colors.green)
+                            term.setTextColor(colors.orange)
                         else
                             term.setTextColor(colors.gray)
                         end
@@ -336,38 +336,38 @@ local function uiRoutine()
                         term.setCursorPos(2,6)
                         if sel == "Toggle Control" then
                             write("Sets the ")
-                            term.setTextColor(colors.green)
+                            term.setTextColor(colors.orange)
                             write("interface")
                             term.setTextColor(colors.gray)
                             write(" to the ")
-                            term.setTextColor(colors.green)
+                            term.setTextColor(colors.orange)
                             write("state")
                             term.setTextColor(colors.gray)
                             write(" variable")
                             intf.state = false
                         elseif sel == "Push Control" then
                             write("Runs when the ")
-                            term.setTextColor(colors.green)
+                            term.setTextColor(colors.orange)
                             write("button ")
                             term.setTextColor(colors.gray)
                             write("is ")
-                            term.setTextColor(colors.green)
+                            term.setTextColor(colors.orange)
                             write("clicked")
                         elseif sel == "Basic Sensor" then
                             write("Return the ")
-                            term.setTextColor(colors.green)
+                            term.setTextColor(colors.orange)
                             write("data ")
                             term.setTextColor(colors.gray)
                             write("to display on the ")
-                            term.setTextColor(colors.green)
+                            term.setTextColor(colors.orange)
                             write("sensor ")
                         elseif sel == "Percentage Bar" then
                             write("Return the ")
-                            term.setTextColor(colors.green)
+                            term.setTextColor(colors.orange)
                             write("percentage ")
                             term.setTextColor(colors.gray)
                             write("as a ")
-                            term.setTextColor(colors.green)
+                            term.setTextColor(colors.orange)
                             write("0 - 1")
                         end
                         term.setTextColor(colors.white)
@@ -382,7 +382,7 @@ local function uiRoutine()
                         intf.script = read()
                         term.setCursorPos(2,11)
                         term.setBackgroundColor(colors.black)
-                        term.setTextColor(colors.green)
+                        term.setTextColor(colors.orange)
                         if #intf.script > 4 then
                             write("Interface Created!")
                             data.io[intfname] = intf
