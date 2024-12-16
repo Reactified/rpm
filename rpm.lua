@@ -92,7 +92,9 @@ local function parseManifest(manifest)
         end
         line = string.gsub(line," ","")
         local pos2 = string.find(line,">")
-        files[#files+1] = {string.sub(line,1,pos2-1),string.sub(line,pos2+1,#line)}
+        if pos2 then
+            files[#files+1] = {string.sub(line,1,pos2-1),string.sub(line,pos2+1,#line)}
+        end
         if not pos then break end
     end
     return files
